@@ -22,7 +22,7 @@ class userUseCases {
                 return { data: true }
             } else {
                 const otp = this.generateOtp.generateOTP();
-                // console.log(otp);
+               
                 let token = jwt.sign({ userData, otp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '5m' });
                 await this.sendMailOtp.sendMail(userData.email, otp)
                 return {
