@@ -23,7 +23,15 @@ class userRepository implements IUserInterface {
             console.error(error.message);
             throw new Error('unable to save user data');
         }
-        
+    }
+    async findUserById(id: string): Promise<User | null> {
+        try {
+            let userdata: User | null = await userModel.findById(id)
+            return userdata
+        } catch (err) {
+            console.log(err);
+            throw new Error("Failed to find user")
+        }
     }
 }
 
