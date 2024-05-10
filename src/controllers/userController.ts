@@ -25,9 +25,10 @@ class UserController {
             res.send(500).json({ success: false, message: 'Internal Sever Error' })
         }
     }
-    async saveToDb(req: Request, res: Response) {
+    async verifyOtp(req: Request, res: Response) {
         try {
             let token = req.headers.authorization?.split(' ')[1] as string
+            console.log(token)
             let otp = req.body.otp
             let saveUserDB = this.userUsecase.saveUserDB(otp, token)
             if ((await saveUserDB).success) {

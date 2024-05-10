@@ -1,4 +1,4 @@
-import {startServer} from './frameworks/config/app'
+import { startServer } from './frameworks/config/app'
 import dotenv from "dotenv";
 import path from "path";
 

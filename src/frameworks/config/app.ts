@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import connectDB from "./connectDB";
-
+import userRoute from '../routes/userRoutes'
 
 export const createServer = () => {
     try {
@@ -12,12 +12,12 @@ export const createServer = () => {
         app.use(express.urlencoded({ extended: true }));
         app.use(cookieParser())
 
-        // app.use(cors({
-        //     origin:'http://localhost:5173',
-        //     methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
-        //     credentials:true
-        // }))
-        // app.use('/',userRoute);
+        app.use(cors({
+            origin:'http://localhost:5173',
+            methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
+            credentials:true
+        }))
+        app.use('/',userRoute);
         // app.use('/volunteer',volunteerRoute);
         // app.use('/admin',communityRoute);
         // app.use('/admin',adminRoute);
@@ -35,7 +35,7 @@ export const startServer = () => {
 
         const app = createServer();
 
-        app?.listen(3001, () => {
+        app?.listen(3000, () => {
             console.log("server is running");
         });
     } catch (error) {
