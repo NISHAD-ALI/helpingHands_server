@@ -21,7 +21,7 @@ const userController = new UserController(useCase)
 router.post('/signup',(req,res)=>userController.signup(req,res))
 router.post('/verifyOtp',(req,res)=>userController.verifyOtp(req,res))
 router.post('/login',(req,res)=>userController.login(req,res))
-
-
+router.get('/logout',(req,res)=>userController.logout(req,res))
+router.post('/resendOtp',(req,res)=>userController.resendOtp(req,res))
 
 export default router

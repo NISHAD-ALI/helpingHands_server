@@ -1,7 +1,7 @@
 import user from "../entities/user";
 import IUserInterface from "./interfaces/IUserInterface";
 import OtpGenerator from "../frameworks/utils/otpGenerator";
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import Jwt from "../frameworks/utils/jwtAuth";
 import SendMail from "../frameworks/utils/mailGenerator";
 import HashPassword from "../frameworks/utils/hashedPassword";
@@ -27,8 +27,10 @@ class userUseCases {
                 return { data: true }
             } else {
                 const otp = this.generateOtp.generateOTP();
+                console.log(otp)
                 let token = jwt.sign({ userData, otp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '10d' });
-                await this.sendMailOtp.sendMail(userData.email, otp)
+                 await this.sendMailOtp.sendMail(userData.email, otp)
+                
                 return {
                     data: false,
                     token: token
@@ -41,12 +43,15 @@ class userUseCases {
     }
     async saveUserDB(token: string, userOtp: string) {
         try {
+            console.log("saveuserdb")
             let payload = this.jwt.verifyToken(token)
             if (payload) {
                 if (userOtp == payload.otp) {
                     let hashedPassword = await this.hashPassword.hashPassword(payload.userData.password)
+                    console.log(hashedPassword)
                     payload.userData.password = hashedPassword;
                     let newUser: any = await this.userRepo.saveUser(payload.userData);
+                    console.log(newUser)
                     if (newUser) {
                         let token = this.jwt.generateToken(newUser._id, 'user');
                         return { success: true, token };
@@ -68,6 +73,7 @@ class userUseCases {
     async login(email:string,password:string){
         try {
             let data = await this.userRepo.findUserByEmail(email)
+            console.log(data)
             if(data){
                 let checkPassword = await this.hashPassword.comparePassword(password,data.password)
                 if(!checkPassword){
@@ -87,7 +93,6 @@ class userUseCases {
                         token:token
                     }
                 }
-
             }else{
                 return{
                     success:false,
@@ -99,6 +104,22 @@ class userUseCases {
             throw error
         }
     }
+    async resendOtp(token: string) {
+        try {
+            let decoded = this.jwt.verifyToken(token) as JwtPayload;
+            let newOtp = this.generateOtp.generateOTP()
+            console.log(newOtp);
+            let userData = decoded.userData
+            let newToken = jwt.sign({ userData, otp:newOtp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '5m' })
+            return newToken;
+        } catch (err) {
+            throw err;
+        }
+    }
+
 }
 
 export default userUseCases
+
+
+
