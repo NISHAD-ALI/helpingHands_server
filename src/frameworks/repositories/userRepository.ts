@@ -33,6 +33,15 @@ class userRepository implements IUserInterface {
             throw new Error("Failed to find user")
         }
     }
+    async changePassword(email: string, password: string): Promise<boolean> {
+        try {
+            let user = await userModel.updateOne({email:email},{$set:{password:password}})
+            return user.acknowledged
+        } catch (error) {
+            console.log(error);
+            throw new Error("Failed to update password")
+        }
+    }
 }
 
 export default userRepository

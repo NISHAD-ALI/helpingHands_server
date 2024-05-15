@@ -64,11 +64,11 @@ class UserController {
                 res.status(200).json({ success: true, token: checkUser.token })
             } else {
                 console.log(checkUser.message)
-                res.status(401).json({ success: false, message: checkUser.message }) 
+                res.status(401).json({ success: false, message: checkUser.message })
             }
         } catch (error) {
             console.error(error)
-            res.status(500).json({ success: false, message: "Internal server error" }) 
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
     async logout(req: Request, res: Response) {
@@ -84,13 +84,64 @@ class UserController {
         }
     }
 
-    async resendOtp(req:Request,res:Response){
+    async resendOtp(req: Request, res: Response) {
         try {
             let token = req.headers.authorization?.split(' ')[1] as string
             let newToken = await this.userUsecase.resendOtp(token)
             res.status(200).json({ success: true, newToken });
         } catch (err) {
             res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    // async googleAuth(req: Request, res: Response) {
+    //     try {
+    //         const { name, email, password } = req.body
+    //         const saveUser = this.userUsecase.googleSignup(name, email, password)
+    //         if ((await saveUser).success) {
+    //             res.status(200).json({ success: true, token: (await saveUser).token })
+    //         } else {
+    //             res.status(401).json({ success: false, mesaage: (await saveUser).mesaage })
+    //         }
+    //     } catch (error) {
+    //         console.error(error)
+    //         res.status(500).json({ success: false, message: "Internal server error" })
+    //     }
+    // }
+    async forgetPassword(req: Request, res: Response) {
+        try {
+            const email = req.body.email
+            const exists = await this.userUsecase.forgetPassword(email)
+            if (!exists.success) {
+                res.status(402).json({ success: false, message: 'User does not exists' })
+            } else {
+                res.status(200).json({ success: true, token: exists.token })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async forgotPasswordOtpVerification(req: Request, res: Response) {
+        try {
+            let token = req.headers.authorization?.split(' ')[1] as string
+            let otp = req.body.otp
+            let response = await this.userUsecase.forgetPasswordOtpVerification(token, otp)
+            if (response) {
+                res.status(200).json({ success: true })
+            } else {
+                res.status(402).json({ success: false, message: 'Incorrect OTP' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async changePassword(req: Request, res: Response) {
+        try {
+            let newPassword = req.body.password
+            let token = req.headers.authorization?.split(' ')[1] as string
+            let response = await this.userUsecase.changePassword(token, newPassword)
+           
+        } catch (error) {
+
         }
     }
 }

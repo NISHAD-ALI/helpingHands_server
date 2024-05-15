@@ -112,8 +112,71 @@ class userUseCases {
             let userData = decoded.userData
             let newToken = jwt.sign({ userData, otp:newOtp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '5m' })
             return newToken;
-        } catch (err) {
-            throw err;
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    // async googleSignup(name:string,email:string,password:string){
+    //     try {
+    //         let exists = await this.userRepo.findUserByEmail(email)
+    //     if(exists){
+    //         return {success:false,mesaage:'Email already Exists'}
+    //     }else{
+    //         const hashedPassword = await this.hashPassword.hashPassword(password)
+    //         const saveUser = await this.userRepo.saveUser({name,email,password : hashedPassword} as user)
+    //         if(saveUser){
+    //             const token = this.jwt.generateToken(saveUser._id,'user')
+    //             return {success:true,token}
+    //         }else{
+    //             return {success:false,mesaage:'Internal Server Error'}
+    //         }
+    //     }
+    //     } catch (error) {
+    //         console.error(error)
+    //         throw error
+    //     }
+
+    // }
+    async forgetPassword(email:string){
+        try {
+            let exists = await this.userRepo.findUserByEmail(email)
+            if(!exists){
+                return {success : false}
+            }else{
+                const otp = this.generateOtp.generateOTP();
+                console.log(otp)
+                let token = jwt.sign({ email, otp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '10d' });
+                 await this.sendMailOtp.sendMail(email, otp)
+                 return {success :true,token}
+            }
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async forgetPasswordOtpVerification(token:string,otp:string){
+        try {
+            let jwtDecoded = this.jwt.verifyToken(token) as JwtPayload
+            if(jwtDecoded.otp !== otp){
+                return false
+            }else{
+                return true
+            }
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async changePassword(token:string,password:string){
+        try {
+            let jwtVerify = this.jwt.verifyToken(token) as JwtPayload
+            let hashedPassword = await this.hashPassword.hashPassword(password)
+            const response = await this.userRepo.changePassword(jwtVerify.email,hashedPassword)
+            return response
+        } catch (error) {
+            console.error(error)
+            throw error
         }
     }
 
