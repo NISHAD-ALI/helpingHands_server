@@ -139,9 +139,13 @@ class UserController {
             let newPassword = req.body.password
             let token = req.headers.authorization?.split(' ')[1] as string
             let response = await this.userUsecase.changePassword(token, newPassword)
-           
+            if (response) {
+                res.status(200).json({ success: true })
+            } else {
+                res.status(402).json({ success: false, message: 'Failed to change the password!' })
+            }
         } catch (error) {
-
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 }

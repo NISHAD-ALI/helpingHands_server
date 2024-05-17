@@ -17,7 +17,7 @@ const userSchema: Schema<user> = new Schema({
         type: String,
     },
     phone: {
-        type: Number
+        type: Number,
     },
     profileImage: {
         type: String

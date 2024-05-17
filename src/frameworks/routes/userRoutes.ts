@@ -25,5 +25,7 @@ router.get('/logout',(req,res)=>userController.logout(req,res))
 router.post('/resendOtp',(req,res)=>userController.resendOtp(req,res))
 // router.post('/googleSignup',(req,res)=>userController.googleAuth(req,res))
 router.post('/forgotPassword',(req,res)=>userController.forgetPassword(req,res))
+router.post('/forgotPassOtpVerify',(req,res)=>userController.forgotPasswordOtpVerification(req,res))
+router.post('/changePassword',(req,res)=>userController.changePassword(req,res))
 
 export default router
