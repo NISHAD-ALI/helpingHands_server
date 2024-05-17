@@ -11,6 +11,8 @@ class communityController{
     }
     async signup(req: Request, res: Response) {
         try {
+            console.log('hello');
+            
             const { email, name, password, phone } = req.body
             const commData = { email, name, password, phone }
             const exists = await this.communityUseCase.findCommunity(commData as community)
@@ -32,17 +34,16 @@ class communityController{
         try {
             let token = req.headers.authorization?.split(' ')[1] as string
             let otp = req.body.otp
-            let saveUserDB = this.communityUseCase.saveUserDB(token, otp)
-            console.log(saveUserDB)
-            if ((await saveUserDB).success) {
-                console.log("oo")
-                res.cookie('userToken', (await saveUserDB).token, {
+            let saveCommDB = this.communityUseCase.saveCommDB(token, otp)
+            console.log(saveCommDB)
+            if ((await saveCommDB).success) {
+                res.cookie('communityToken', (await saveCommDB).token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true
                 })
-                res.status(200).json(saveUserDB)
+                res.status(200).json(saveCommDB)
             } else {
-                res.status(402).json({ success: false, message: (await saveUserDB).message })
+                res.status(402).json({ success: false, message: (await saveCommDB).message })
             }
         } catch (error) {
             console.error(error)
@@ -52,11 +53,10 @@ class communityController{
 
     async login(req: Request, res: Response) {
         try {
-            console.log("inside")
             const { email, password } = req.body
             let checkUser = await this.communityUseCase.login(email, password)
             if (checkUser.success) {
-                res.cookie('userToken', checkUser.token, {
+                res.cookie('communityToken', checkUser.token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true
                 })
@@ -72,7 +72,7 @@ class communityController{
     }
     async logout(req: Request, res: Response) {
         try {
-            res.cookie('userToken', '', {
+            res.cookie('communityToken', '', {
                 httpOnly: true,
                 expires: new Date(0)
             })

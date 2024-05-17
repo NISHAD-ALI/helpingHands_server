@@ -3,7 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import connectDB from "./connectDB";
 import userRoute from '../routes/userRoutes'
-
+import CommunityRoutes from '../routes/communityRoutes' 
 export const createServer = () => {
     try {
 
@@ -19,7 +19,7 @@ export const createServer = () => {
         }))
         app.use('/',userRoute);
         // app.use('/volunteer',volunteerRoute);
-        // app.use('/admin',communityRoute);
+        app.use('/community',CommunityRoutes);
         // app.use('/admin',adminRoute);
        
 
