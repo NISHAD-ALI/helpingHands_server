@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import user from "../../entities/user"
 
 const userSchema: Schema<user> = new Schema({
@@ -18,6 +18,7 @@ const userSchema: Schema<user> = new Schema({
     },
     phone: {
         type: Number,
+
     },
     profileImage: {
         type: String
@@ -25,6 +26,21 @@ const userSchema: Schema<user> = new Schema({
     is_blocked: {
         type: Boolean,
         default: false
+    },
+    posts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Posts',
+            default: []
+        }
+    ],
+    donationsFund: {
+        type: Number,
+        default: 0
+    },
+    donationsEssentials: {
+        type: Number,
+        default: 0
     },
 
 })

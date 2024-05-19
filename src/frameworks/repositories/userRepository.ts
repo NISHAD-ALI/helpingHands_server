@@ -42,6 +42,15 @@ class userRepository implements IUserInterface {
             throw new Error("Failed to update password")
         }
     }
+    async editUser(id: string, user: User): Promise<boolean> {
+        try {
+            let newData = await userModel.updateOne({_id:id},user,{new:true})
+            return newData.acknowledged
+        } catch (error) {
+            console.log(error);
+            throw new Error("Failed to update user Details")
+        }
+    }
 }
 
 export default userRepository

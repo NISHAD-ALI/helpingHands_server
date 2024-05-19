@@ -5,6 +5,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import Jwt from "../frameworks/utils/jwtAuth";
 import SendMail from "../frameworks/utils/mailGenerator";
 import HashPassword from "../frameworks/utils/hashedPassword";
+import Cloudinary from "../frameworks/utils/cloudinary";
 
 
 class userUseCases {
@@ -13,12 +14,14 @@ class userUseCases {
     private jwt: Jwt
     private sendMailOtp: SendMail
     private hashPassword :HashPassword
-    constructor(userRepo: IUserInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail,hashPassword:HashPassword) {
+    private cloudinary : Cloudinary
+    constructor(userRepo: IUserInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail,hashPassword:HashPassword,cloudinary:Cloudinary) {
         this.userRepo = userRepo
         this.generateOtp = generateOtp
         this.jwt = jwt
         this.sendMailOtp = sendMailOtp
         this.hashPassword = hashPassword
+        this.cloudinary = cloudinary
     }
     async findUser(userData: user) {
         try {
@@ -173,6 +176,27 @@ class userUseCases {
             let jwtVerify = this.jwt.verifyToken(token) as JwtPayload
             let hashedPassword = await this.hashPassword.hashPassword(password)
             const response = await this.userRepo.changePassword(jwtVerify.email,hashedPassword)
+            return response
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async getProfile(id:string){
+        try {
+            const userData = this.userRepo.findUserById(id)
+            return userData
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async editProfile(id:string,newData:user){
+        try {
+            let uploadFile = await this.cloudinary.uploadToCloud(newData.profileImage)
+            newData.profileImage = uploadFile
+            let response = await this.userRepo.editUser(id,newData);
+            console.log(response+"->api response")
             return response
         } catch (error) {
             console.error(error)

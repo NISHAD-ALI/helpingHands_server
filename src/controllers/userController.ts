@@ -13,6 +13,7 @@ class UserController {
         try {
             const { name, email, password, phone } = req.body
             const userData = { name, email, password, phone }
+            console.log("userData:",userData)
             const exists = await this.userUsecase.findUser(userData as user)
             console.log(exists)
             if (!exists.data) {
@@ -20,6 +21,7 @@ class UserController {
                 const user = await userModel.findOne({ email: email });
                 res.status(200).json({ success: true, token, username: user })
             } else {
+                console.log("hi")
                 res.status(409).json({ success: false, message: "Email already exists" });
 
             }
@@ -34,7 +36,7 @@ class UserController {
             let token = req.headers.authorization?.split(' ')[1] as string
             let otp = req.body.otp
             let saveUserDB = this.userUsecase.saveUserDB(token, otp)
-            console.log(saveUserDB)
+            console.log((await saveUserDB).token+"--------------------")
             if ((await saveUserDB).success) {
                 console.log("oo")
                 res.cookie('userToken', (await saveUserDB).token, {
@@ -53,36 +55,44 @@ class UserController {
 
     async login(req: Request, res: Response) {
         try {
-            console.log("inside")
-            const { email, password } = req.body
-            let checkUser = await this.userUsecase.login(email, password)
+            console.log("inside");
+            const { email, password } = req.body;
+            let checkUser = await this.userUsecase.login(email, password);
             if (checkUser.success) {
                 res.cookie('userToken', checkUser.token, {
                     expires: new Date(Date.now() + 25892000000),
-                    httpOnly: true
-                })
-                res.status(200).json({ success: true, token: checkUser.token })
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    path: '/',
+                });
+                res.status(200).json({ success: true, token: checkUser.token });
             } else {
-                console.log(checkUser.message)
-                res.status(401).json({ success: false, message: checkUser.message })
+                console.log(checkUser.message);
+                res.status(401).json({ success: false, message: checkUser.message });
             }
         } catch (error) {
-            console.error(error)
-            res.status(500).json({ success: false, message: "Internal server error" })
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
+    
     async logout(req: Request, res: Response) {
         try {
-            res.cookie('userToken', '', {
+            res.clearCookie('userToken', {
                 httpOnly: true,
-                expires: new Date(0)
-            })
-            res.status(200).json({ success: true })
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+  
+            res.status(200).json({ success: true });
         } catch (error) {
-            console.error(error)
-            res.status(500).json({ success: false, message: "Internal server error" })
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
+    
 
     async resendOtp(req: Request, res: Response) {
         try {
@@ -143,6 +153,43 @@ class UserController {
                 res.status(200).json({ success: true })
             } else {
                 res.status(402).json({ success: false, message: 'Failed to change the password!' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async getProfile(req:Request,res:Response){
+        try {
+            console.log('in get')
+            let userId = req.userId
+            console.log(req.userId);
+            
+            if(userId){
+                let data = await this.userUsecase.getProfile(userId)
+                res.status(200).json({ success: true,data })
+            }else{
+                res.status(402).json({ success: false, message: 'Failed to user profile!' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async editProfile(req:Request,res:Response){
+        try {
+            console.log("in edit")
+            const userId = req.userId
+            const newData = req.body
+            let profileImage = req.file
+            newData.profileImage = profileImage 
+            if (userId) {
+                let updated = await this.userUsecase.editProfile(userId, newData);
+                if (updated) {
+                    res.status(200).json({ success: true });
+                } else {
+                    res.status(500).json({ success: false, message: 'Cannot update user profile!' })
+                }
+            } else {
+                res.status(401).json({ success: false, message: "Something went wrong!Try again!" })
             }
         } catch (error) {
             res.status(500).json({ success: false, message: 'Internal server error!' });

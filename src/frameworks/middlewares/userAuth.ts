@@ -1,46 +1,52 @@
 import { NextFunction, Request, Response } from "express";
 import Jwt from "../utils/jwtAuth";
 import userRepository from "../repositories/userRepository";
-const jwt = new Jwt()
-const userRepo = new userRepository()
+
+const jwt = new Jwt();
+const userRepo = new userRepository();
 
 declare global {
     namespace Express {
         interface Request {
-            userId?: string
+            userId?: string;
         }
     }
 }
 
 const userAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let token = req.cookies.userToken;
+        console.log('in user Auth ');
+        const token = req.cookies.userToken;
+        console.log(`${token}-1`);
+
         if (!token) {
-            res.status(401).json({ success: false, message: "Unauthorised Access - No valid token" })
+            return res.status(401).json({ success: false, message: "Unauthorized Access - No valid token" });
         }
-        const decode = jwt.verifyToken(token)
+
+        const decode = jwt.verifyToken(token);
+        console.log(decode);
         if (decode && decode.role !== 'user') {
             res.status(401).json({ success: false, message: "Unauthorised Access - No valid token" })
         }
-        if (decode && decode.Id) {
-            let user = await userRepo.findUserById(decode.Id)
+        if (decode && decode.id) {
+            const user = await userRepo.findUserById(decode.id);
+            console.log("finally")
             if (user?.is_blocked) {
-                res.status(401).json({ success: false, message: "User is blocked by admin" })
+                return res.status(401).json({ success: false, message: "User is blocked by admin" });
             } else {
-                req.userId = decode.Id
-                next();
+                req.userId = decode.id;
+                console.log(`${req.userId} -- here`);
+                return next();
             }
         } else {
-            res.status(401).json({ success: false, message: "Unauthorised Access - No valid token" })
+            return res.status(401).json({ success: false, message: "Unauthorized Access - No valid token" });
         }
-
     } catch (error: any) {
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
         }
-        return res.status(401).send({ success: false, message: "Unauthorized - Invalid token" })
+        return res.status(401).send({ success: false, message: "Unauthorized - Invalid token" });
     }
-}
+};
 
-
-export default userAuth
+export default userAuth;
