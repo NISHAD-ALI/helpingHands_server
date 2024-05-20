@@ -103,20 +103,30 @@ class UserController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    // async googleAuth(req: Request, res: Response) {
-    //     try {
-    //         const { name, email, password } = req.body
-    //         const saveUser = this.userUsecase.googleSignup(name, email, password)
-    //         if ((await saveUser).success) {
-    //             res.status(200).json({ success: true, token: (await saveUser).token })
-    //         } else {
-    //             res.status(401).json({ success: false, mesaage: (await saveUser).mesaage })
-    //         }
-    //     } catch (error) {
-    //         console.error(error)
-    //         res.status(500).json({ success: false, message: "Internal server error" })
-    //     }
-    // }
+    async googleAuth(req: Request, res: Response) {
+        try {
+            const { name, email, password } = req.body;
+            const saveUser = await this.userUsecase.googleSignup(name, email, password);
+    
+            if (saveUser.success) {
+                res.cookie('userToken', saveUser.token, {
+                    expires: new Date(Date.now() + 25892000000),
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    path: '/',
+                });
+    
+                res.status(200).json({ success: true, token: saveUser.token });
+            } else {
+                res.status(401).json({ success: false, message: saveUser.message });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    }
+    
     async forgetPassword(req: Request, res: Response) {
         try {
             const email = req.body.email
