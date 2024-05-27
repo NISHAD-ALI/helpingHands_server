@@ -1,5 +1,5 @@
-import user from "../entities/user";
-import IUserInterface from "./interfaces/IUserInterface";
+import volunteer from "../entities/volunteer";
+import IVolunteerInterface from "./interfaces/IVolunteerInterface";
 import OtpGenerator from "../frameworks/utils/otpGenerator";
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import Jwt from "../frameworks/utils/jwtAuth";
@@ -8,31 +8,31 @@ import HashPassword from "../frameworks/utils/hashedPassword";
 import Cloudinary from "../frameworks/utils/cloudinary";
 
 
-class userUseCases {
-    private userRepo: IUserInterface;
+class volunteerUseCases {
+    private volunteerRepo: IVolunteerInterface;
     private generateOtp: OtpGenerator;
     private jwt: Jwt
     private sendMailOtp: SendMail
     private hashPassword: HashPassword
     private cloudinary: Cloudinary
-    constructor(userRepo: IUserInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail, hashPassword: HashPassword, cloudinary: Cloudinary) {
-        this.userRepo = userRepo
+    constructor(volunteerRepo: IVolunteerInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail, hashPassword: HashPassword, cloudinary: Cloudinary) {
+        this.volunteerRepo = volunteerRepo
         this.generateOtp = generateOtp
         this.jwt = jwt
         this.sendMailOtp = sendMailOtp
         this.hashPassword = hashPassword
         this.cloudinary = cloudinary
     }
-    async findUser(userData: user) {
+    async findVolunteer(volunteerData: volunteer) {
         try {
-            let userExist = await this.userRepo.findUserByEmail(userData.email)
-            if (userExist) {
+            let volunteerExist = await this.volunteerRepo.findvolunteerByEmail(volunteerData.email)
+            if (volunteerExist) {
                 return { data: true }
             } else {
                 const otp = this.generateOtp.generateOTP();
                 console.log(otp)
-                let token = jwt.sign({ userData, otp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '10d' });
-                await this.sendMailOtp.sendMail(userData.email, otp)
+                let token = jwt.sign({ volunteerData, otp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '10d' });
+                await this.sendMailOtp.sendMail(volunteerData.email, otp)
 
                 return {
                     data: false,
@@ -44,19 +44,18 @@ class userUseCases {
             throw err;
         }
     }
-    async saveUserDB(token: string, userOtp: string) {
+    async saveVolunteerDB(token: string, volunteerOtp: string) {
         try {
-            console.log("saveuserdb")
             let payload = this.jwt.verifyToken(token)
             if (payload) {
-                if (userOtp == payload.otp) {
-                    let hashedPassword = await this.hashPassword.hashPassword(payload.userData.password)
+                if (volunteerOtp == payload.otp) {
+                    let hashedPassword = await this.hashPassword.hashPassword(payload.volunteerData.password)
                     console.log(hashedPassword)
-                    payload.userData.password = hashedPassword;
-                    let newUser: any = await this.userRepo.saveUser(payload.userData);
-                    console.log(newUser)
-                    if (newUser) {
-                        let token = this.jwt.generateToken(newUser._id, 'user');
+                    payload.volunteerData.password = hashedPassword;
+                    let volunteer: any = await this.volunteerRepo.saveVolunteer(payload.volunteerData);
+                    console.log(volunteer)
+                    if (volunteer) {
+                        let token = this.jwt.generateToken(volunteer._id, 'volunteer');
                         return { success: true, token };
                     } else {
                         return { success: false, message: "Internal server error!" }
@@ -75,7 +74,7 @@ class userUseCases {
     }
     async login(email: string, password: string) {
         try {
-            let data = await this.userRepo.findUserByEmail(email)
+            let data = await this.volunteerRepo.findvolunteerByEmail(email)
             console.log(data)
             if (data) {
                 let checkPassword = await this.hashPassword.comparePassword(password, data.password)
@@ -90,7 +89,7 @@ class userUseCases {
                         message: "You've been blocked by admin"
                     }
                 } else {
-                    let token = this.jwt.generateToken(data._id, 'user')
+                    let token = this.jwt.generateToken(data._id, 'volunteer')
                     return {
                         success: true,
                         token: token
@@ -112,40 +111,40 @@ class userUseCases {
             let decoded = this.jwt.verifyToken(token) as JwtPayload;
             let newOtp = this.generateOtp.generateOTP()
             console.log(newOtp);
-            let userData = decoded.userData
-            let newToken = jwt.sign({ userData, otp: newOtp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '5m' })
+            let volunteerData = decoded.volunteerData
+            let newToken = jwt.sign({ volunteerData, otp: newOtp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '5m' })
             return newToken;
         } catch (error) {
             console.error(error)
             throw error
         }
     }
-    async googleSignup(name: string, email: string, password: string) {
-        try {
-            console.log('in g sign');
+    // async googleSignup(name: string, email: string, password: string) {
+    //     try {
+    //         console.log('in g sign');
 
-            let exists = await this.userRepo.findUserByEmail(email)
-            if (exists) {
-                return { success: false, mesaage: 'Email already Exists' }
-            } else {
-                const hashedPassword = await this.hashPassword.hashPassword(password)
-                const saveUser = await this.userRepo.saveUser({ name, email, password: hashedPassword } as user)
-                if (saveUser) {
-                    const token = this.jwt.generateToken(saveUser._id, 'user')
-                    return { success: true, token }
-                } else {
-                    return { success: false, message: 'Internal Server Error' }
-                }
-            }
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
+    //         let exists = await this.volunteerRepo.findvolunteerByEmail(email)
+    //         if (exists) {
+    //             return { success: false, mesaage: 'Email already Exists' }
+    //         } else {
+    //             const hashedPassword = await this.hashPassword.hashPassword(password)
+    //             const savevolunteer = await this.volunteerRepo.savevolunteer({ name, email, password: hashedPassword } as volunteer)
+    //             if (savevolunteer) {
+    //                 const token = this.jwt.generateToken(savevolunteer._id, 'volunteer')
+    //                 return { success: true, token }
+    //             } else {
+    //                 return { success: false, message: 'Internal Server Error' }
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error(error)
+    //         throw error
+    //     }
 
-    }
+    // }
     async forgetPassword(email: string) {
         try {
-            let exists = await this.userRepo.findUserByEmail(email)
+            let exists = await this.volunteerRepo.findvolunteerByEmail(email)
             if (!exists) {
                 return { success: false }
             } else {
@@ -177,7 +176,7 @@ class userUseCases {
         try {
             let jwtVerify = this.jwt.verifyToken(token) as JwtPayload
             let hashedPassword = await this.hashPassword.hashPassword(password)
-            const response = await this.userRepo.changePassword(jwtVerify.email, hashedPassword)
+            const response = await this.volunteerRepo.changePassword(jwtVerify.email, hashedPassword)
             return response
         } catch (error) {
             console.error(error)
@@ -186,18 +185,18 @@ class userUseCases {
     }
     async getProfile(id: string) {
         try {
-            const userData = this.userRepo.findUserById(id)
-            return userData
+            const volunteerData = this.volunteerRepo.findVolunteerById(id)
+            return volunteerData
         } catch (error) {
             console.error(error)
             throw error
         }
     }
-    async editProfile(id: string, newData: user) {
+    async editProfile(id: string, newData: volunteer) {
         try {
             let uploadFile = await this.cloudinary.uploadToCloud(newData.profileImage)
             newData.profileImage = uploadFile
-            let response = await this.userRepo.editUser(id, newData);
+            let response = await this.volunteerRepo.editVolunteer(id, newData);
             console.log(response + "->api response")
             return response
         } catch (error) {
@@ -208,4 +207,4 @@ class userUseCases {
 
 }
 
-export default userUseCases
+export default volunteerUseCases
