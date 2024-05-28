@@ -36,6 +36,6 @@ const communitySchmea :Schema<community> = new Schema({
     }
 
 })
-const communityModel = model<community>('Community', communitySchmea);
+const communityModel = model<community>('community', communitySchmea);
 
 export default communityModel;

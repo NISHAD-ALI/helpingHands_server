@@ -5,6 +5,7 @@ import connectDB from "./connectDB";
 import userRoute from '../routes/userRoutes'
 import CommunityRoutes from '../routes/communityRoutes'
 import VolunteerRoutes from '../routes/volunteerRoutes'
+import adminRoute from '../routes/adminRoutes';
 export const createServer = () => {
     try {
 
@@ -21,7 +22,7 @@ export const createServer = () => {
         app.use('/',userRoute);
         app.use('/volunteer',VolunteerRoutes);
         app.use('/community',CommunityRoutes);
-        // app.use('/admin',adminRoute);
+        app.use('/admin',adminRoute);
        
 
         return app
