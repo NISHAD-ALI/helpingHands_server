@@ -5,7 +5,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import SendMail from "../frameworks/utils/mailGenerator";
 import HashPassword from "../frameworks/utils/hashedPassword";
 import Jwt from "../frameworks/utils/jwtAuth";
-
+import Cloudinary from "../frameworks/utils/cloudinary";
 
 class communityUsecase {
     private communityRepo: ICommunityInterface;
@@ -13,12 +13,14 @@ class communityUsecase {
     private jwt: Jwt
     private sendMailOtp: SendMail
     private hashPassword: HashPassword
-    constructor(communityRepo: ICommunityInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail, hashPassword: HashPassword) {
+    private cloudinary: Cloudinary
+    constructor(communityRepo: ICommunityInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail, hashPassword: HashPassword,cloudinary: Cloudinary) {
         this.communityRepo = communityRepo
         this.generateOtp = generateOtp
         this.jwt = jwt
         this.sendMailOtp = sendMailOtp
         this.hashPassword = hashPassword
+        this.cloudinary = cloudinary
     }
     async findCommunity(commData: community) {
         try {
@@ -109,6 +111,7 @@ class communityUsecase {
             throw error
         }
     }
+   
 }
 
 export default communityUsecase

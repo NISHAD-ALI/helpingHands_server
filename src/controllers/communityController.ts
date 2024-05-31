@@ -1,18 +1,17 @@
-import { Request,Response } from "express";
+import { Request, Response } from "express";
 import communityUsecase from "../useCases/communityUsecase";
 import communityModel from "../frameworks/database/communityModel";
 import community from "../entities/community";
 
-
-class communityController{
-    private communityUseCase : communityUsecase
-    constructor(communityuseCase:communityUsecase){
+class communityController {
+    private communityUseCase: communityUsecase
+    constructor(communityuseCase: communityUsecase) {
         this.communityUseCase = communityuseCase
     }
     async signup(req: Request, res: Response) {
         try {
             console.log('hello');
-            
+
             const { email, name, password, phone } = req.body
             const commData = { email, name, password, phone }
             const exists = await this.communityUseCase.findCommunity(commData as community)
@@ -92,6 +91,8 @@ class communityController{
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
+
+
 }
 
 export default communityController

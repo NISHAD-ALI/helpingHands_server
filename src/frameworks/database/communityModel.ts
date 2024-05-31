@@ -20,7 +20,7 @@ const communitySchmea :Schema<community> = new Schema({
     volunteers: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Volunteers',
+            ref: 'volunteer',
             default: []
         }
     ],
