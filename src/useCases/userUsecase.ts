@@ -195,7 +195,7 @@ class userUseCases {
     }
     async editProfile(id: string, newData: user) {
         try {
-            let uploadFile = await this.cloudinary.uploadToCloud(newData.profileImage)
+            let uploadFile = await this.cloudinary.uploadImageToCloud(newData.profileImage)
             newData.profileImage = uploadFile
             let response = await this.userRepo.editUser(id, newData);
             console.log(response + "->api response")

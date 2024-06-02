@@ -47,6 +47,7 @@ class communityUsecase {
     async saveCommDB(token: string, otp: string) {
         try {
             let payload = this.jwt.verifyToken(token)
+            console.log(payload?.commData+"payload");
             if (payload) {
                 if (otp === payload.otp) {
                     let hashedPassword = await this.hashPassword.hashPassword(payload.commData.password)

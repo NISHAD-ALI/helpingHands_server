@@ -34,7 +34,6 @@ class communityController {
             let token = req.headers.authorization?.split(' ')[1] as string
             let otp = req.body.otp
             let saveCommDB = this.communityUseCase.saveCommDB(token, otp)
-            console.log(saveCommDB)
             if ((await saveCommDB).success) {
                 res.cookie('communityToken', (await saveCommDB).token, {
                     expires: new Date(Date.now() + 25892000000),

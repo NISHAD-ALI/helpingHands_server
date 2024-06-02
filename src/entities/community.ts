@@ -9,6 +9,7 @@ interface community{
     volunteers:[ObjectId],
     profileImage:string,
     about:string,
+    events:[ObjectId],
     is_blocked:boolean
 }
 

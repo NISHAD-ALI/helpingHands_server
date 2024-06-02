@@ -24,7 +24,7 @@ const eventSchema: Schema<events> = new Schema({
     ],
     communId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'community',
+        ref: 'community', // Ensure this matches the community model name
     },
     shifts: [
         {
@@ -32,11 +32,11 @@ const eventSchema: Schema<events> = new Schema({
             timeSlot: { type: String, required: true }
         }
     ],
-    volunteerCount:{
-        type:String,
+    volunteerCount: {
+        type: String,
     },
 });
 
-const eventModel = model<events>('event', eventSchema);
+const eventModel = model<events>('event', eventSchema); // Make sure the model name is 'event'
 
 export default eventModel;

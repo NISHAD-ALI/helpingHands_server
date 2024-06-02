@@ -2,12 +2,12 @@ import { ObjectId, Types } from "mongoose"
 
 export default interface events{
     _id?:string,
-    communId:ObjectId,
-    images:[string],
+    communId?:ObjectId,
+    images:string[],
     video:string,
     name:string,
     volunteerCount:string,
-    volunteers:[ObjectId],
+    volunteers?:[ObjectId],
     details:string,
     shifts:[Shift],
 
