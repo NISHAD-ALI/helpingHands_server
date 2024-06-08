@@ -3,6 +3,8 @@ import admin from "../../entities/admin";
 import IAdminInterface from "../../useCases/interfaces/IAdminInterface";
 import community from "../../entities/community";
 import communityModel from "../database/communityModel";
+import user from "../../entities/user";
+import userModel from "../database/userModel";
 
 class adminRepository implements IAdminInterface {
     async findAdminByEmail(email: string): Promise<admin | null> {
@@ -23,6 +25,29 @@ class adminRepository implements IAdminInterface {
         } catch (error : any) {
             console.error(error.message)
             throw new Error('unable to fetch list of communities')
+        }
+    }
+    async getUsers():Promise<user | null>{
+        try {
+            let data: any = await userModel.find({})
+            return data
+        } catch (error : any) {
+            console.error(error.message)
+            throw new Error('unable to fetch list of users')
+        }
+    }
+    async blockUser(id: string): Promise<boolean> {
+        try {
+            let user = await userModel.findById(id);
+            if (user) {
+                await userModel.findByIdAndUpdate(id, { $set: { is_blocked: !user.is_blocked } })
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+            throw new Error("Failed to block user")
         }
     }
 

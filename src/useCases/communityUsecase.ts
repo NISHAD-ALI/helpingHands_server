@@ -84,6 +84,7 @@ class communityUsecase {
                     }
                 } else {
                     let token = this.jwt.generateToken(data._id, 'community')
+                    console.log(token)
                     return {
                         success: true,
                         token: token
@@ -112,7 +113,47 @@ class communityUsecase {
             throw error
         }
     }
-   
+    async getProfile(id: string) {
+        try {
+            const communityData = this.communityRepo.findCommunityById(id)
+            return communityData
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async editProfile(id: string, newData: community) {
+        try {
+            let uploadFile = await this.cloudinary.uploadImageToCloud(newData.profileImage)
+            newData.profileImage = uploadFile
+            let response = await this.communityRepo.editCommunity(id, newData);
+            console.log(response + "->api response")
+            return response
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async updateStatus(id: string, is_accepted: boolean,communityId:string) {
+        try {
+            let response = await this.communityRepo.updateStatus(id, is_accepted,communityId);
+            console.log(response + "->api response")
+            return response
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async getVolunteers(id: string) {
+        try {
+            const data = this.communityRepo.getVolunteers(id)
+            return data
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
 }
+
 
 export default communityUsecase

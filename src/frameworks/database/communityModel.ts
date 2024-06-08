@@ -1,7 +1,39 @@
-import mongoose, { Schema, model } from "mongoose";
-import community from "../../entities/community";
+import mongoose, { Schema, model, Document } from "mongoose";
 
-const communitySchema: Schema<community> = new Schema({
+interface Volunteer {
+    volunteerId: mongoose.Types.ObjectId;
+    is_accepted: boolean;
+    date?: Date; 
+}
+
+interface Community extends Document {
+    name: string;
+    email: string;
+    password?: string;
+    phone?: number;
+    volunteers: Volunteer[];
+    profileImage?: string;
+    about?: string;
+    is_blocked: boolean;
+    events: mongoose.Types.ObjectId[];
+}
+
+const volunteerSchema: Schema<Volunteer> = new Schema({
+    volunteerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'volunteer',
+        required: true
+    },
+    is_accepted: {
+        type: Boolean,
+        default: false
+    },
+    date: {
+        type: Date
+    }
+});
+
+const communitySchema: Schema<Community> = new Schema({
     name: {
         type: String,
         required: true
@@ -11,23 +43,17 @@ const communitySchema: Schema<community> = new Schema({
         required: true
     },
     password: {
-        type: String,
+        type: String
     },
     phone: {
         type: Number
     },
-    volunteers: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'volunteer',
-            default: []
-        }
-    ],
+    volunteers: [volunteerSchema],
     profileImage: {
-        type: String,
+        type: String
     },
     about: {
-        type: String,
+        type: String
     },
     is_blocked: {
         type: Boolean,
@@ -36,12 +62,12 @@ const communitySchema: Schema<community> = new Schema({
     events: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'event', 
+            ref: 'event',
             default: []
         }
     ]
 });
 
-const communityModel = model<community>('community', communitySchema);
+const communityModel = model<Community>('community', communitySchema);
 
 export default communityModel;

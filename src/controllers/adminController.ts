@@ -57,6 +57,34 @@ class adminController{
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
+    async getUsers(req: Request, res: Response){
+        try {
+            let userData = await this.adminUsecase.getUsers()
+            if (userData) {
+                res.status(200).json({ success: true, userData })
+            } else {
+                res.status(500).json({ success: false, message: "Internal server error" })
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async blockUser(req: Request, res: Response){
+        try {
+            let userId = req.params.id;
+            console.log('userid' + userId)
+            let blocked = await this.adminUsecase.blockUser(userId);
+            if (blocked) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(200).json({ success: false, message: "Internal server error" })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
 }
 
 export default adminController

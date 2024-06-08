@@ -16,5 +16,7 @@ const Controller = new adminController(admin,jwt)
 router.post('/login',(req,res)=>Controller.login(req,res))
 router.get('/logout',(req,res)=>Controller.logout(req,res))
 router.get('/getCommunities',(req,res)=>Controller.getAllCommunities(req,res))
+router.get('/getUsers',(req,res)=>Controller.getUsers(req,res))
+router.post('/blockUser/:id',(req,res)=>Controller.blockUser(req,res))
 
 export default router

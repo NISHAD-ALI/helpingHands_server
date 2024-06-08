@@ -172,11 +172,10 @@ class volunteerUseCases {
             throw error
         }
     }
-    async changePassword(token: string, password: string) {
+    async changePassword(password: string,id:string) {
         try {
-            let jwtVerify = this.jwt.verifyToken(token) as JwtPayload
             let hashedPassword = await this.hashPassword.hashPassword(password)
-            const response = await this.volunteerRepo.changePassword(jwtVerify.email, hashedPassword)
+            const response = await this.volunteerRepo.changePassword(hashedPassword,id)
             return response
         } catch (error) {
             console.error(error)
@@ -204,7 +203,46 @@ class volunteerUseCases {
             throw error
         }
     }
+    async enrollToCommunity(communityId : string,volunteerId :string) {
+        try {
+            const volunteerData = this.volunteerRepo.enrollToCommunity(communityId,volunteerId)
+            return volunteerData
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async findVolunteerById(id:any){
+        try {
+            const data = this.volunteerRepo.findVolunteerById(id)
+            return data
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async getEvents(id:any){
+        try {
+            const data = this.volunteerRepo.findEvents(id)
+            return data
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async enrollToEvent(volunteerId : string,eventId :string) {
+        try {
+            const addToEvent = this.volunteerRepo.enrollToEvents(volunteerId,eventId)
 
+            return addToEvent
+        } catch (error) {
+            if (error === 'VolunteerAlreadyEnrolledError') {
+                console.error('Volunteer is already enrolled in this event+1');
+            }
+            console.error(error)
+            throw error
+        }
+    }
 }
 
 export default volunteerUseCases

@@ -30,7 +30,7 @@ const volunteerSchema: Schema<volunteer> = new Schema({
     events: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Events',
+            ref: 'event',
             default: []
         }
     ],
@@ -39,7 +39,14 @@ const volunteerSchema: Schema<volunteer> = new Schema({
     },
     about:{
         type:String,
-    }
+    },
+    communities:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'community',
+            default: []
+        }
+    ]
 
 })
 

@@ -152,9 +152,11 @@ class VolunteerController {
     }
     async changePassword(req: Request, res: Response) {
         try {
-            let newPassword = req.body.password
-            let token = req.headers.authorization?.split(' ')[1] as string
-            let response = await this.volunteerUseCases.changePassword(token,newPassword)
+            console.log("enfenirbu")
+            // let newPassword = req.body.password
+            // let id = req.body.id
+              const {password,id} = req.body
+            let response = await this.volunteerUseCases.changePassword(password,id)
             if (response) {
                 res.status(200).json({ success: true })
             } else {
@@ -164,43 +166,118 @@ class VolunteerController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    // async getProfile(req:Request,res:Response){
-    //     try {
-    //         console.log('in get')
-    //         let volunteerId = req.volunteerId
-    //         console.log(req.volunteerId);
+    async getProfile(req:Request,res:Response){
+        try {
+            console.log('in get')
+            let volunteerId = req.volunteerId
+            console.log(req.volunteerId);
             
-    //         if(volunteerId){
-    //             let data = await this.volunteerUseCases.getProfile(volunteerId)
-    //             res.status(200).json({ success: true,data })
-    //         }else{
-    //             res.status(402).json({ success: false, message: 'Failed to user profile!' })
-    //         }
-    //     } catch (error) {
-    //         res.status(500).json({ success: false, message: 'Internal server error!' });
-    //     }
-    // }
-    // async editProfile(req:Request,res:Response){
-    //     try {
-    //         console.log("in edit")
-    //         const userId = req.userId
-    //         const newData = req.body
-    //         let profileImage = req.file
-    //         newData.profileImage = profileImage 
-    //         if (userId) {
-    //             let updated = await this.userUsecase.editProfile(userId, newData);
-    //             if (updated) {
-    //                 res.status(200).json({ success: true });
-    //             } else {
-    //                 res.status(500).json({ success: false, message: 'Cannot update user profile!' })
-    //             }
-    //         } else {
-    //             res.status(401).json({ success: false, message: "Something went wrong!Try again!" })
-    //         }
-    //     } catch (error) {
-    //         res.status(500).json({ success: false, message: 'Internal server error!' });
-    //     }
-    // }
+            if(volunteerId){
+                let data = await this.volunteerUseCases.getProfile(volunteerId)
+                res.status(200).json({ success: true,data })
+            }else{
+                res.status(402).json({ success: false, message: 'Failed to volunteer profile!' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async editProfile(req:Request,res:Response){
+        try {
+            console.log("kk")
+            const volunteerId = req.volunteerId
+            console.log("in edit"+volunteerId)
+            const newData = req.body
+            console.log(newData)
+            let profileImage = req.file
+            console.log(profileImage)
+            newData.profileImage = profileImage 
+            if (volunteerId) {
+                console.log("hi")
+                let updated = await this.volunteerUseCases.editProfile(volunteerId, newData);
+                if (updated) {
+                    res.status(200).json({ success: true });
+                } else {
+                    res.status(500).json({ success: false, message: 'Cannot update volunteer profile!' })
+                }
+
+            } else {
+                res.status(401).json({ success: false, message: "Something went wrong!Try again!" })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async enrollToCommunity(req:Request,res:Response){
+        try {
+               const {communityId,volunteerId} = req.body
+            
+            if(volunteerId && communityId){
+                let data = await this.volunteerUseCases.enrollToCommunity(communityId,volunteerId)
+                res.status(200).json({ success: true,data })
+            }else{
+                res.status(402).json({ success: false, message: 'Failed to volunteer profile!' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async getVolunteerById(req: Request, res: Response) {
+        try {
+            console.log("in controller");
+            console.log(req.query.id);
+            let ids = req.query.id;
+            if (Array.isArray(ids)) {
+                let data:any[] = [];
+                for (let id of ids) {
+                    let volunteerData = await this.volunteerUseCases.findVolunteerById(id);
+                    data.push(volunteerData);
+                }
+                res.status(200).json({ success: true, data });
+            } else {
+                let id = ids;
+                if (id) {
+                    let data = await this.volunteerUseCases.findVolunteerById(id);
+                    res.status(200).json({ success: true, data });
+                } else {
+                    res.status(402).json({ success: false, message: 'Failed to fetch volunteer profile!' });
+                }
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async getEvents(req:Request,res:Response){
+        try {
+            console.log('in get')
+            let volunteerId = req.volunteerId
+            console.log(req.volunteerId);
+            
+            if(volunteerId){
+                let data = await this.volunteerUseCases.getEvents(volunteerId)
+                res.status(200).json({ success: true,data })
+            }else{
+                res.status(402).json({ success: false, message: 'Failed to volunteer!' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async enrollToEvent(req:Request,res:Response){
+        try {
+               const {eventId} = req.body
+               const volunteerId = req.volunteerId
+               console.log(eventId)
+            if(volunteerId && eventId){
+                let data = await this.volunteerUseCases.enrollToEvent(volunteerId,eventId)
+                res.status(200).json({ success: true,data })
+            }else{
+                res.status(402).json({ success: false, message: 'Failed to enroll to the selected event!' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
 }
 
 export default VolunteerController

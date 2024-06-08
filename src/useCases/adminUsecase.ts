@@ -44,6 +44,24 @@ class adminUsecase {
             throw error;
         }
     }
+    async getUsers(){
+        try {
+            let data = await this.adminRepo.getUsers()
+            return data
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async blockUser(id: string) {
+        try {
+            let blocked = await this.adminRepo.blockUser(id);
+            return blocked;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
 }
 
 export default adminUsecase

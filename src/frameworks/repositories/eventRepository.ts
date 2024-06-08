@@ -23,8 +23,6 @@ class eventRepository implements IEventInterface {
     async getEvents(id: string):Promise<events | null>{
         try {
             let data: any = await communityModel.findOne({_id :id }).populate('events');
-            console.log(data + "--------events data");
-            
             return data
         } catch (error : any) {
             console.error(error.message)
@@ -34,7 +32,6 @@ class eventRepository implements IEventInterface {
     async getEventsById(id: string):Promise<events | null>{
         try {
             let event: any = await eventModel.findOne({_id:id})
-            console.log(event);
             return event
         } catch (error : any) {
             console.error(error.message)
@@ -44,13 +41,23 @@ class eventRepository implements IEventInterface {
     async deleteEvent(id: string):Promise<Boolean | null>{
         try {
             let event: any = await eventModel.deleteOne({_id:id})
-            console.log(event);
             return event
         } catch (error : any) {
             console.error(error.message)
             throw new Error('unable to delete event')
         }
     }
+    async editEvent(id: string, eventData: Partial<events>): Promise<events | null> {
+        try {
+            const updatedEvent = await eventModel.findByIdAndUpdate(id, eventData, { new: true });
+            // console.log('Updated in DB:', updatedEvent);
+            return updatedEvent ? updatedEvent.toObject() : null;
+        } catch (error: any) {
+            console.error("Error updating event:", error.message);
+            throw new Error('Unable to update event');
+        }
+    }
+    
 
 }
 

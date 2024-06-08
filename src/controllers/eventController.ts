@@ -38,8 +38,6 @@ class eventController {
                 }
             });
     
-            console.log('Images:', images);
-            console.log('Video:', video);
             const token = req.cookies.communityToken;
             let communityId;
             try {
@@ -129,6 +127,62 @@ class eventController {
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
+    async editEvent(req: Request, res: Response) {
+        try {
+            console.log("-------------------------------------")
+            const { id,formData } = req.body;
+            const { name, volunteerCount, details, shifts } = formData;
+            console.log(req.files)
+            let parsedShifts;
+            if (shifts) {
+                parsedShifts = JSON.parse(shifts);
+            }
+            let filesInfo: Array<{ filename: string, mimetype: string, path: string }> = [];
+    
+            if (Array.isArray(req.files)) {
+                req.files.forEach((file: Express.Multer.File) => {
+                    const fileInfo = {
+                        filename: file.originalname,
+                        mimetype: file.mimetype,
+                        path: file.path
+                    };
+                    filesInfo.push(fileInfo);
+                });
+            }
+    
+            let images: Array<any> = [];
+            let video: any = null;
+    
+            filesInfo.forEach((fileInfo) => {
+                if (fileInfo.mimetype.startsWith('image/')) {
+                    images.push(fileInfo);
+                } else if (fileInfo.mimetype.startsWith('video/')) {
+                    video = fileInfo;
+                }
+            });
+            let communityId = req.communityId
+            const eventData: Partial<events> = {
+                ...(name && { name }),
+                ...(details && { details }),
+                ...(parsedShifts && { shifts: parsedShifts }),
+                ...(images.length && { images }),
+                ...(video && { video }),
+                ...(volunteerCount && { volunteerCount }),
+            };
+             console.log(eventData);
+             
+            const updatedData = await this.eventUsecase.editEvent(id, eventData as Partial<events>);
+            if (updatedData) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Cannot Update Event!' });
+            }
+        } catch (error) {
+            console.error('Error updating event:', error);
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    
 }    
 
 

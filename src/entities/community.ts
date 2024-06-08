@@ -6,7 +6,7 @@ interface community{
     name:string,
     phone:number,
     password:string,
-    volunteers:[ObjectId],
+    volunteers: { volunteerId: string; is_accepted: boolean }[];
     profileImage:string,
     about:string,
     events:[ObjectId],

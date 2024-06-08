@@ -12,6 +12,7 @@ interface volunteer {
     events: [ObjectId],
     bloodGroup: string,
     about:string,
+    communities:[ObjectId],
 
 }
 

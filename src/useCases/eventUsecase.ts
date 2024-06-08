@@ -18,8 +18,6 @@ class eventUsecase {
         try {
             let images = eventData.images
             let video = eventData.video
-            console.log(images);
-            console.log(video)
             
             let uploadVideo = await this.cloudinary.uploadVideoToCloud(eventData.video)
             eventData.video = uploadVideo
@@ -60,6 +58,29 @@ class eventUsecase {
             throw error;
         }
     }
+    async editEvent(id: string, eventData: Partial<events>) {
+        try {
+            let images = eventData.images;
+            let video = eventData.video;
+    
+            if (video) {
+                let uploadVideo = await this.cloudinary.uploadVideoToCloud(eventData.video);
+                eventData.video = uploadVideo;
+            }
+    
+            if (images && images.length > 0) {
+                let uploadImages = await this.cloudinary.uploadImagesArrayToCloud(images);
+                eventData.images = uploadImages;
+            }
+    
+            let response = await this.eventRepo.editEvent(id, eventData);
+            return response;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    
 }
 
 export default eventUsecase

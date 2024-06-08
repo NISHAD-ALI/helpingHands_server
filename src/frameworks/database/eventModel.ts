@@ -24,7 +24,7 @@ const eventSchema: Schema<events> = new Schema({
     ],
     communId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'community', // Ensure this matches the community model name
+        ref: 'community',
     },
     shifts: [
         {
