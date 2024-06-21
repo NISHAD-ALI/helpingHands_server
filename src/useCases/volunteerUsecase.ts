@@ -230,19 +230,34 @@ class volunteerUseCases {
             throw error
         }
     }
-    async enrollToEvent(volunteerId : string,eventId :string) {
+    async notEnrolledEvents(id:any){
         try {
-            const addToEvent = this.volunteerRepo.enrollToEvents(volunteerId,eventId)
-
-            return addToEvent
+            const data = this.volunteerRepo.notEnrolledEvents(id)
+            return data
         } catch (error) {
-            if (error === 'VolunteerAlreadyEnrolledError') {
-                console.error('Volunteer is already enrolled in this event+1');
-            }
             console.error(error)
             throw error
-        }
+        }  
     }
+    async enrolledEvents(id:any){
+        try {
+            const data = this.volunteerRepo.enrolledEvents(id)
+            return data
+        } catch (error) {
+            console.error(error)
+            throw error
+        }  
+    }
+    async enrollToEvent(volunteerId: string, eventId: string) {
+        try {
+            const addToEvent = await this.volunteerRepo.enrollToEvents(volunteerId, eventId);
+    
+            return addToEvent;
+        } catch (error: any) {
+            console.error('Error in use case:', error.message);
+            throw new Error(error.message);
+        }
+    }    
 }
 
 export default volunteerUseCases

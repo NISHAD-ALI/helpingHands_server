@@ -4,6 +4,7 @@ import adminModel from "../frameworks/database/adminModel";
 import admin from "../entities/admin";
 import Jwt from "../frameworks/utils/jwtAuth";
 import { JwtPayload } from "jsonwebtoken";
+import donations from "../entities/donations";
 
 
 class adminController{
@@ -82,6 +83,37 @@ class adminController{
             }
         } catch (error) {
             console.log(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async createDonation(req:Request,res:Response){
+        try {
+           const {fundraiserName,email, targetAmount, donationType, startDate, endDate, contactAddress,details} = req.body
+         let image: any = req.file
+         const donationData : donations = {
+            name:fundraiserName,email,image, targetAmount, type:donationType, startDate, endDate, contact:contactAddress,details
+         }
+         const response = await this.adminUsecase.createDonation(donationData)
+         if(response){
+            res.status(200).json({ success: true });
+         }else{
+            res.status(401).json({ message:'Please Try Again later' });
+         }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async getDonations(req: Request, res: Response){
+        try {
+            let donations = await this.adminUsecase.getDonations()
+            if (donations) {
+                res.status(200).json({ success: true, donations })
+            } else {
+                res.status(500).json({ success: false, message: "Please try again" })
+            }
+        } catch (error) {
+            console.error(error)
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }

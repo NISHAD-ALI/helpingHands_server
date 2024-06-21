@@ -5,6 +5,8 @@ import community from "../../entities/community";
 import communityModel from "../database/communityModel";
 import user from "../../entities/user";
 import userModel from "../database/userModel";
+import donations from "../../entities/donations";
+import donationModel from "../database/donationModel";
 
 class adminRepository implements IAdminInterface {
     async findAdminByEmail(email: string): Promise<admin | null> {
@@ -50,7 +52,26 @@ class adminRepository implements IAdminInterface {
             throw new Error("Failed to block user")
         }
     }
+    async createDonation(donation: donations): Promise<donations | null> {
+        try {
+            let newDonation = new donationModel(donation);
+            await newDonation.save();
 
+            return newDonation ? newDonation.toObject() : null;
+        } catch (error: any) {
+            console.error("Error creating donation:", error.message);
+            throw new Error('Unable to create donation');
+        }
+    }
+    async getDonations():Promise<donations | null>{
+        try {
+            let data: any = await donationModel.find({})
+            return data
+        } catch (error : any) {
+            console.error(error.message)
+            throw new Error('unable to fetch list of donations')
+        }
+    }
 }
 
 export default adminRepository

@@ -6,4 +6,8 @@ export default interface IEventInterface {
     getEventsById(id: string):Promise<events | null>,
     deleteEvent(id: string):Promise<Boolean | null>,
     editEvent(id: string, eventData: Partial<events>): Promise<events | null>,
+    getEventsFilteredByDateRange(startDate?: Date, endDate?: Date): Promise<events[]>,
+    getEventsFilteredByCategory(name:string): Promise<events[]>,
+    getEventsFilteredByDay(date:Date): Promise<events[]>,
+    searchEvents(query:string): Promise<events[]>
 }

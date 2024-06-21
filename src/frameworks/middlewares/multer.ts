@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
     },
     filename:function(req:Request,file:Express.Multer.File,cb){
         const name = Date.now()+'-'+file.originalname;
-        console.log('image uploaded')
+        console.log('file uploaded')
         cb(null,name);
     }
     

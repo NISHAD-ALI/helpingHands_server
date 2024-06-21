@@ -6,7 +6,7 @@ import Jwt from "../frameworks/utils/jwtAuth";
 import SendMail from "../frameworks/utils/mailGenerator";
 import HashPassword from "../frameworks/utils/hashedPassword";
 import Cloudinary from "../frameworks/utils/cloudinary";
-
+import stripePayment from "../frameworks/utils/stripe";
 
 class userUseCases {
     private userRepo: IUserInterface;
@@ -15,13 +15,15 @@ class userUseCases {
     private sendMailOtp: SendMail
     private hashPassword: HashPassword
     private cloudinary: Cloudinary
-    constructor(userRepo: IUserInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail, hashPassword: HashPassword, cloudinary: Cloudinary) {
+    private stripe:stripePayment
+    constructor(userRepo: IUserInterface, generateOtp: OtpGenerator, jwt: Jwt, sendMailOtp: SendMail, hashPassword: HashPassword, cloudinary: Cloudinary,stripe:stripePayment) {
         this.userRepo = userRepo
         this.generateOtp = generateOtp
         this.jwt = jwt
         this.sendMailOtp = sendMailOtp
         this.hashPassword = hashPassword
         this.cloudinary = cloudinary
+        this.stripe = stripe
     }
     async findUser(userData: user) {
         try {
@@ -200,6 +202,20 @@ class userUseCases {
             let response = await this.userRepo.editUser(id, newData);
             console.log(response + "->api response")
             return response
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    async payDonation(amount :any,userId:string,donationId:string) {
+        try {
+            const response = await this.stripe.createCheckoutSession(amount);
+            console.log(donationId)
+            const data = await this.userRepo.donation(amount,userId,donationId)
+            if(data){
+
+                return response
+            }
         } catch (error) {
             console.error(error)
             throw error

@@ -14,7 +14,7 @@ export const createServer = () => {
         app.use(express.urlencoded({ extended: true }));
         app.use(cookieParser())
 
-        app.use(cors({
+        app.use(cors({  
             origin:'http://localhost:5173',
             methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials:true

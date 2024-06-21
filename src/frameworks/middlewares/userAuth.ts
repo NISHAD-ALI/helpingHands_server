@@ -15,27 +15,22 @@ declare global {
 
 const userAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log('in user Auth ');
         const token = req.cookies.userToken;
-        console.log(`${token}-1`);
 
         if (!token) {
             return res.status(401).json({ success: false, message: "Unauthorized Access - No valid token" });
         }
 
         const decode = jwt.verifyToken(token);
-        console.log(decode);
         if (decode && decode.role !== 'user') {
             res.status(401).json({ success: false, message: "Unauthorised Access - No valid token" })
         }
         if (decode && decode.id) {
             const user = await userRepo.findUserById(decode.id);
-            console.log("finally")
             if (user?.is_blocked) {
                 return res.status(401).json({ success: false, message: "User is blocked by admin" });
             } else {
                 req.userId = decode.id;
-                console.log(`${req.userId} -- here`);
                 return next();
             }
         } else {

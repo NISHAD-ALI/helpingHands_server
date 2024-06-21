@@ -40,5 +40,8 @@ router.get('/profile',communityAuth,(req,res)=>commController.getProfile(req,res
 router.patch('/editProfile',communityAuth,uploadFile.single('profileImage'),(req,res)=>commController.editProfile(req,res))
 router.patch('/updateStatus',communityAuth,(req,res)=>commController.updateStatus(req,res))
 router.get('/getVolunteers',communityAuth,(req,res)=>commController.getVolunteers(req,res))
-
+router.get('/getEventsFilteredByDateRange',(req,res)=>eventNewController.getEventsFilteredByDateRange(req,res))
+router.get('/getEventsFilteredByCategory',(req,res)=>eventNewController.getEventsFilteredByCategory(req,res))
+router.get('/getEventsFilteredByDay',(req,res)=>eventNewController.getEventsFilteredByDay(req,res))
+router.get('/searchEvents',(req,res)=>eventNewController.searchEvents(req,res))
 export default router

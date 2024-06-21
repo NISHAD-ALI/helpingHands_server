@@ -10,7 +10,9 @@ export default interface events{
     volunteers?:[ObjectId],
     details:string,
     shifts:[Shift],
-
+    category:string,
+    is_online:boolean,
+    city:string
 }
 
 

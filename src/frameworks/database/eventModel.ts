@@ -28,15 +28,24 @@ const eventSchema: Schema<events> = new Schema({
     },
     shifts: [
         {
-            date: { type: String, required: true },
+            date: { type: Date, required: true },
             timeSlot: { type: String, required: true }
         }
     ],
     volunteerCount: {
         type: String,
     },
+    category: {
+        type: String,
+    },
+    is_online:{
+        type: Boolean,
+    },
+    city: {
+        type: String,
+    },
 });
 
-const eventModel = model<events>('event', eventSchema); // Make sure the model name is 'event'
+const eventModel = model<events>('event', eventSchema); 
 
 export default eventModel;

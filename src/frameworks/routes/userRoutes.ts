@@ -9,6 +9,7 @@ import userAuth from "../middlewares/userAuth";
 import userRepository from "../repositories/userRepository";
 import Cloudinary from "../utils/cloudinary";
 import { uploadFile } from "../middlewares/multer";
+import stripePayment from "../utils/stripe";
 
 const router = express.Router()
 const userRepo = new userRepository()
@@ -17,8 +18,8 @@ const jwt = new Jwt()
 const mail = new SendMail()
 const hash = new HashPassword()
 const cloudinary = new Cloudinary()
-
-const useCase = new userUseCases(userRepo,otp,jwt,mail,hash,cloudinary)
+const stripe = new stripePayment()
+const useCase = new userUseCases(userRepo,otp,jwt,mail,hash,cloudinary,stripe)
 const userController = new UserController(useCase)
 
 router.post('/signup',(req,res)=>userController.signup(req,res))
@@ -32,5 +33,6 @@ router.post('/forgotPassOtpVerify',(req,res)=>userController.forgotPasswordOtpVe
 router.post('/changePassword',(req,res)=>userController.changePassword(req,res))
 router.get('/profile',userAuth,(req,res)=>userController.getProfile(req,res))
 router.patch('/editProfile',userAuth,uploadFile.single('profileImage'),(req,res)=>userController.editProfile(req,res))
+router.post('/payment',userAuth,(req,res)=>userController.fundraiser(req,res))
 
 export default router

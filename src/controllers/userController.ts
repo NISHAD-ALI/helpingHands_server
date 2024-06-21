@@ -205,6 +205,17 @@ class UserController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-}
-
+    async fundraiser(req: Request, res: Response) {
+        try {
+          const userId  = req.userId;
+          const {amount,donationId} = req.body
+          console.log(amount,donationId)
+          const sessionId = await this.userUsecase.payDonation(amount,userId as string,donationId)
+          console.log(sessionId)
+          res.status(200).json({ sessionId });
+        } catch (error) {
+          res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+      }
+    }
 export default UserController

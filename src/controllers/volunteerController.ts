@@ -274,6 +274,38 @@ class VolunteerController {
             }else{
                 res.status(402).json({ success: false, message: 'Failed to enroll to the selected event!' })
             }
+        } catch (error :any) {
+            res.status(500).json({ success: false, message: error.message || 'Failed to enroll to the selected event!' });
+        }
+    }
+    async getNotEnrolledEvents(req:Request,res:Response){
+        try {
+            console.log('in get')
+            let volunteerId = req.volunteerId
+            console.log(req.volunteerId);
+            
+            if(volunteerId){
+                let data = await this.volunteerUseCases.notEnrolledEvents(volunteerId)
+                res.status(200).json({ success: true,data })
+            }else{
+                res.status(402).json({ success: false, message: 'Failed to volunteer!' })
+            }
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+    async getEnrolledEvents(req:Request,res:Response){
+        try {
+            console.log('in get')
+            let volunteerId = req.volunteerId
+            console.log(req.volunteerId);
+            
+            if(volunteerId){
+                let data = await this.volunteerUseCases.enrolledEvents(volunteerId)
+                res.status(200).json({ success: true,data })
+            }else{
+                res.status(402).json({ success: false, message: 'Failed to volunteer!' })
+            }
         } catch (error) {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }

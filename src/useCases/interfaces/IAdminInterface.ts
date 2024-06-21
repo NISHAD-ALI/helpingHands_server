@@ -1,5 +1,6 @@
 import admin from "../../entities/admin";
 import community from "../../entities/community";
+import donations from "../../entities/donations";
 import user from "../../entities/user";
 
 interface IAdminInterface{
@@ -7,5 +8,7 @@ interface IAdminInterface{
     getCommunities():Promise<community | null>,
     getUsers():Promise<user | null>,
     blockUser(id: string): Promise<boolean>,
+    createDonation(donation: donations): Promise<donations | null>,
+    getDonations():Promise<donations | null>
 }
 export default IAdminInterface;

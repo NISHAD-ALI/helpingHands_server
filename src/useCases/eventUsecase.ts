@@ -80,7 +80,47 @@ class eventUsecase {
             throw error;
         }
     }
-    
+    async getEventsFilteredByDateRange(startDate:string, endDate:string){
+        try {
+             let start: Date | undefined = startDate ? new Date(startDate) : undefined;
+             let end: Date | undefined = endDate ? new Date(endDate) : undefined;
+            const events = await this.eventRepo.getEventsFilteredByDateRange(start, end);
+            return events
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async getEventsFilteredByCategory(name:string){
+        try {
+            const events = await this.eventRepo.getEventsFilteredByCategory(name);
+            return events
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async getEventsFilteredByDay(date:string){
+        try {
+             let newDate: Date  = new Date(date) 
+             console.log(newDate)
+            const events = await this.eventRepo.getEventsFilteredByDay(newDate);
+            return events
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async searchEvents(query:string){
+        try {
+             console.log(query)
+            const events = await this.eventRepo.searchEvents(query);
+            return events
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 export default eventUsecase

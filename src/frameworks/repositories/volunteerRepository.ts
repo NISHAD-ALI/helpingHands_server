@@ -94,43 +94,89 @@ class volunteerRepository implements IVolunteerInterface {
 
             const communityIds = volunteer.communities.map((community: any) => community._id);
             const events = await eventModel.find({ communId: { $in: communityIds } });
-
+            console.log(events);
+            
             return events
         } catch (error) {
             console.log(error);
             throw new Error('Failed to get volunteer community events');
         }
     }
-    
-    async enrollToEvents(volunteerId: string, eventId: string): Promise<boolean> {
+    async notEnrolledEvents(volunteerId: string): Promise<events[] | null> {
         try {
-            const volunteer = await volunteerModel.findById(volunteerId);
-
+            const volunteer = await volunteerModel.findById(volunteerId).populate('events');
+            
             if (!volunteer) {
                 throw new Error('Volunteer not found');
             }
+            console.log(volunteer);
+            
+            const enrolledEventIds = volunteer.events.map((event:any) => event?._id.toString());
+            console.log(enrolledEventIds);
+            
+            const allCommunityEvents = await this.findEvents(volunteerId);
+    
+            if (!allCommunityEvents) {
+                return [];
+            }
+    
+            const notEnrolledEvents = allCommunityEvents.filter((event:any) => !enrolledEventIds.includes(event._id.toString()));
+    
+            console.log(notEnrolledEvents);
+            
+            return notEnrolledEvents;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failed to get volunteer community events');
+        }
+    }
+    async enrollToEvents(volunteerId: string, eventId: string): Promise<boolean> {
+        try {
+            const volunteer = await volunteerModel.findById(volunteerId);
+    
+            if (!volunteer) {
+                throw new Error('Volunteer not found');
+            }
+    
             const eventObjectId = new mongoose.Types.ObjectId(eventId).toString();
-
+    
             if (volunteer.events.map(event => event.toString()).includes(eventObjectId)) {
                 throw new Error('Volunteer is already enrolled in this event');
             }
-            
-            const addToEvent = await volunteerModel.findByIdAndUpdate(
+    
+            const addToVolunteer = await volunteerModel.findByIdAndUpdate(
                 volunteerId,
                 { $push: { events: eventId } },
                 { new: true }
             );
-
+            console.log(addToVolunteer)
+            if (!addToVolunteer) {
+                throw new Error('Failed to add volunteer to event');
+            }
+            const addToEvent = await eventModel.findByIdAndUpdate(
+                eventId,
+                { $push: { volunteers: volunteerId } },
+                { new: true }
+            );
+    
             if (!addToEvent) {
                 throw new Error('Failed to add volunteer to event');
             }
-
+    
             return true;
-        } catch (error) {
-            console.error('Error enrolling volunteer to event:', error);
-            throw new Error('Failed to add volunteer to event');
+        } catch (error :any) {
+            console.error('Error enrolling volunteer to event:', error.message);
+            throw new Error(error.message || 'Failed to add volunteer to event');
         }
-
+    }
+    async enrolledEvents(volunteerId: string): Promise<events[] | null> {
+        try {
+            const event:any = await volunteerModel.findById(volunteerId).populate('events');
+            return event;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failed to get volunteer community events');
+        }
     }
 }
 

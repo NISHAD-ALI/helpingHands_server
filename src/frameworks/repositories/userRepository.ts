@@ -1,6 +1,7 @@
 import User from "../../entities/user";
 import userModel from "../database/userModel";
 import IUserInterface from "../../useCases/interfaces/IUserInterface";
+import donationModel from "../database/donationModel";
 
 
 class userRepository implements IUserInterface {
@@ -50,6 +51,28 @@ class userRepository implements IUserInterface {
             console.log(error);
             throw new Error("Failed to update user Details")
         }
+    }
+    async donation(amount:number,userId:string,donationId:string): Promise<boolean>{
+        const userUpdateResult = await userModel.findByIdAndUpdate(
+            userId,
+            { $inc: { donationsFund: amount } },
+            { new: true }
+          );
+          const donationUpdateResult = await donationModel.findByIdAndUpdate(
+            donationId,
+            {
+              $inc: { amountCollected: amount },
+              $addToSet: { donatedUsers: userId }
+            },
+            { new: true}
+          );
+          if (!userUpdateResult) {
+            throw new Error('User not found');
+          }
+          if (!donationUpdateResult) {
+            throw new Error('Donation not found');
+          }
+          return true
     }
 }
 

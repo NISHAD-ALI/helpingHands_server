@@ -10,6 +10,8 @@ interface IVolunteerInterface {
      enrollToCommunity(communityId: string, volunteerId: string): Promise<boolean>,
      findEvents(volunteerId: string):Promise<events[] | null>,
      enrollToEvents(volunteerId: string, eventId: string): Promise<boolean>,
+     notEnrolledEvents(volunteerId: string): Promise<events[] | null>,
+     enrolledEvents(volunteerId: string): Promise<events[] | null>
 }
 
 export default IVolunteerInterface

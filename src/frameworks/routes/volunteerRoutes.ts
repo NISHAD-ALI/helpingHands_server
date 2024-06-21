@@ -40,5 +40,7 @@ router.post('/enroll',(req,res)=>volunteerController.enrollToCommunity(req,res))
 router.get('/getVolunteer',(req,res)=>volunteerController.getVolunteerById(req,res))
 router.get('/getEvents',volunteerAuth,(req,res)=>volunteerController.getEvents(req,res))
 router.post('/enrollToEvent',volunteerAuth,(req,res)=>volunteerController.enrollToEvent(req,res))
+router.get('/getNotEnrolledEvents',volunteerAuth,(req,res)=>volunteerController.getNotEnrolledEvents(req,res))
+router.get('/getEnrolledEvents',volunteerAuth,(req,res)=>volunteerController.getEnrolledEvents(req,res))
 
 export default router
