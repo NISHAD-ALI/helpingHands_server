@@ -39,6 +39,26 @@ class SendMail implements InodeMailerInterface{
 
        
     }
+    async reportPostMail(to: string, id: string,): Promise<any> {
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to,
+            subject: 'Removal of Post',
+            html: `<p>Hi </p>${to}<p>Your Post <strong>${id}</strong> has been Removed because it does not follow community policy <br><br><br>regards,<br><b>TEAM helpingHands<b></p>`,
+          };
+       
+      
+          
+        this.transporter.sendMail(mailOptions,(err)=>{
+            if(err){
+                console.log(err);
+            }else{
+                console.log('OTP sent successfully!')
+            }
+        });
+
+       
+    }
 }
 
 export default SendMail;

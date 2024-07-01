@@ -10,7 +10,8 @@ interface community{
     profileImage:string,
     about:string,
     events:[ObjectId],
-    is_blocked:boolean
+    is_blocked:boolean,
+    defaultConversation:ObjectId
 }
 
 export default community

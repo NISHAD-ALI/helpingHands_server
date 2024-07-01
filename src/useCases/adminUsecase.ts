@@ -5,17 +5,26 @@ import Jwt from "../frameworks/utils/jwtAuth";
 import HashPassword from "../frameworks/utils/hashedPassword";
 import donations from "../entities/donations";
 import Cloudinary from "../frameworks/utils/cloudinary";
+import IPostInterface from "./interfaces/IPostInterface";
+import SendMail from "../frameworks/utils/mailGenerator";
+import IUserInterface from "./interfaces/IUserInterface";
 
 class adminUsecase {
     private adminRepo: IAdminInterface;
+    private postRepo : IPostInterface;
     private jwt: Jwt;
     private hashPassword: HashPassword
     private cloudinary: Cloudinary;
-    constructor(adminRepo: IAdminInterface, jwt: Jwt,hashPassword: HashPassword,cloudinary: Cloudinary,) {
+    private sendMail: SendMail;
+    private userRepo : IUserInterface
+    constructor(adminRepo: IAdminInterface, jwt: Jwt,hashPassword: HashPassword,cloudinary: Cloudinary,postRepo : IPostInterface,sendMail: SendMail,userRepo : IUserInterface) {
         this.adminRepo = adminRepo
         this.jwt = jwt
         this.hashPassword = hashPassword
         this.cloudinary = cloudinary
+        this.postRepo = postRepo
+        this.sendMail = sendMail;
+        this.userRepo = userRepo
     }
 
     async login(email: string, password: string) {
@@ -85,6 +94,28 @@ class adminUsecase {
     async getDonations(){
         try {
             let data = await this.adminRepo.getDonations()
+            return data
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async getAllReports(){
+        try {
+            let data = await this.adminRepo.getAllReports()
+            return data
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async terminatePost(postId:string,userId:string,message:string){
+        try {
+            let user = await this.userRepo.findUserById(userId)
+            console.log(user+"eda mwone")
+            await this.sendMail.reportPostMail(user?.email as string,postId)
+            let data = await this.postRepo.deletePost(postId,userId)
+            
             return data
         } catch (error) {
             console.log(error);

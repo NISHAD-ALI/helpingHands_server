@@ -6,14 +6,19 @@ import Jwt from "../utils/jwtAuth";
 import HashPassword from "../utils/hashedPassword";
 import Cloudinary from "../utils/cloudinary";
 import { uploadFile } from "../middlewares/multer";
+import postRepository from "../repositories/postRepository";
+import SendMail from "../utils/mailGenerator";
+import userRepository from "../repositories/userRepository";
 
 const router = express.Router()
 const adminRepo = new adminRepository()
 const jwt = new Jwt()
 const hash = new HashPassword()
 const cloudinary = new Cloudinary()
-
-const admin = new adminUsecase(adminRepo,jwt,hash,cloudinary)
+const postRepo = new postRepository
+const mail = new SendMail()
+const userRepo = new userRepository()
+const admin = new adminUsecase(adminRepo,jwt,hash,cloudinary,postRepo,mail,userRepo)
 const Controller = new adminController(admin,jwt)
 
 router.post('/login',(req,res)=>Controller.login(req,res))
@@ -23,4 +28,8 @@ router.get('/getUsers',(req,res)=>Controller.getUsers(req,res))
 router.post('/blockUser/:id',(req,res)=>Controller.blockUser(req,res))
 router.post('/createDonation',uploadFile.single('image'),(req,res)=>Controller.createDonation(req,res))
 router.get('/getDonations',(req,res)=>Controller.getDonations(req,res))
+router.get('/getAllReports',(req,res)=>Controller.getAllReports(req,res))
+router.post('/terminatePost',(req,res)=>Controller.terminatePost(req,res))
+
+
 export default router

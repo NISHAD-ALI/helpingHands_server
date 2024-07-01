@@ -10,5 +10,6 @@ interface IAdminInterface{
     blockUser(id: string): Promise<boolean>,
     createDonation(donation: donations): Promise<donations | null>,
     getDonations():Promise<donations | null>
+    getAllReports():Promise<any | null>
 }
 export default IAdminInterface;

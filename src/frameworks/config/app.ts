@@ -6,6 +6,8 @@ import userRoute from '../routes/userRoutes'
 import CommunityRoutes from '../routes/communityRoutes'
 import VolunteerRoutes from '../routes/volunteerRoutes'
 import adminRoute from '../routes/adminRoutes';
+import socketServer from './socket';
+import http from 'http'
 export const createServer = () => {
     try {
 
@@ -23,9 +25,11 @@ export const createServer = () => {
         app.use('/volunteer',VolunteerRoutes);
         app.use('/community',CommunityRoutes);
         app.use('/admin',adminRoute);
-       
 
-        return app
+        const server = http.createServer(app);
+        socketServer(server);
+
+        return server
     } catch (error: any) {
         console.log(error.message);
     }
@@ -36,7 +40,7 @@ export const startServer = () => {
         connectDB();
 
         const app = createServer();
-
+        
         app?.listen(3001, () => {
             console.log("server is running");
         });

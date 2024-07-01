@@ -13,7 +13,7 @@ class UserController {
         try {
             const { name, email, password, phone } = req.body
             const userData = { name, email, password, phone }
-            console.log("userData:",userData)
+            console.log("userData:", userData)
             const exists = await this.userUsecase.findUser(userData as user)
             console.log(exists)
             if (!exists.data) {
@@ -36,7 +36,7 @@ class UserController {
             let token = req.headers.authorization?.split(' ')[1] as string
             let otp = req.body.otp
             let saveUserDB = this.userUsecase.saveUserDB(token, otp)
-            console.log((await saveUserDB).token+"--------------------")
+            console.log((await saveUserDB).token + "--------------------")
             if ((await saveUserDB).success) {
                 console.log("oo")
                 res.cookie('userToken', (await saveUserDB).token, {
@@ -76,7 +76,7 @@ class UserController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
-    
+
     async logout(req: Request, res: Response) {
         try {
             res.clearCookie('userToken', {
@@ -85,14 +85,14 @@ class UserController {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
-  
+
             res.status(200).json({ success: true });
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
-    
+
 
     async resendOtp(req: Request, res: Response) {
         try {
@@ -107,7 +107,7 @@ class UserController {
         try {
             const { name, email, password } = req.body;
             const saveUser = await this.userUsecase.googleSignup(name, email, password);
-    
+
             if (saveUser.success) {
                 res.cookie('userToken', saveUser.token, {
                     expires: new Date(Date.now() + 25892000000),
@@ -116,7 +116,7 @@ class UserController {
                     sameSite: 'strict',
                     path: '/',
                 });
-    
+
                 res.status(200).json({ success: true, token: saveUser.token });
             } else {
                 res.status(401).json({ success: false, message: saveUser.message });
@@ -126,7 +126,7 @@ class UserController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
-    
+
     async forgetPassword(req: Request, res: Response) {
         try {
             const email = req.body.email
@@ -168,29 +168,29 @@ class UserController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async getProfile(req:Request,res:Response){
+    async getProfile(req: Request, res: Response) {
         try {
             console.log('in get')
             let userId = req.userId
             console.log(req.userId);
-            
-            if(userId){
+
+            if (userId) {
                 let data = await this.userUsecase.getProfile(userId)
-                res.status(200).json({ success: true,data })
-            }else{
+                res.status(200).json({ success: true, data })
+            } else {
                 res.status(402).json({ success: false, message: 'Failed to user profile!' })
             }
         } catch (error) {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async editProfile(req:Request,res:Response){
+    async editProfile(req: Request, res: Response) {
         try {
             console.log("in edit")
             const userId = req.userId
             const newData = req.body
             let profileImage = req.file
-            newData.profileImage = profileImage 
+            newData.profileImage = profileImage
             if (userId) {
                 let updated = await this.userUsecase.editProfile(userId, newData);
                 if (updated) {
@@ -207,15 +207,15 @@ class UserController {
     }
     async fundraiser(req: Request, res: Response) {
         try {
-          const userId  = req.userId;
-          const {amount,donationId} = req.body
-          console.log(amount,donationId)
-          const sessionId = await this.userUsecase.payDonation(amount,userId as string,donationId)
-          console.log(sessionId)
-          res.status(200).json({ sessionId });
+            const userId = req.userId;
+            const { amount, donationId } = req.body
+            console.log(amount, donationId)
+            const sessionId = await this.userUsecase.payDonation(amount, userId as string, donationId)
+            console.log(sessionId)
+            res.status(200).json({ sessionId });
         } catch (error) {
-          res.status(500).json({ success: false, message: 'Internal server error!' });
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
-      }
     }
+}
 export default UserController

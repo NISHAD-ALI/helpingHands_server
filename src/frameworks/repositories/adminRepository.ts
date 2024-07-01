@@ -7,6 +7,7 @@ import user from "../../entities/user";
 import userModel from "../database/userModel";
 import donations from "../../entities/donations";
 import donationModel from "../database/donationModel";
+import reportPostModel from "../database/reportPostModel";
 
 class adminRepository implements IAdminInterface {
     async findAdminByEmail(email: string): Promise<admin | null> {
@@ -72,6 +73,21 @@ class adminRepository implements IAdminInterface {
             throw new Error('unable to fetch list of donations')
         }
     }
+    async getAllReports(): Promise<any | null> {
+        try {
+            let data: any = await reportPostModel
+                .find({})
+                .populate('postId')
+                .populate('reportedUsers.userId');
+                console.log(data)
+            return data;
+        } catch (error: any) {
+            console.error(error.message);
+            throw new Error('Unable to fetch list of reports');
+        }
+    }
+    
+    
 }
 
 export default adminRepository

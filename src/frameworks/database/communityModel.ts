@@ -16,6 +16,7 @@ interface Community extends Document {
     about?: string;
     is_blocked: boolean;
     events: mongoose.Types.ObjectId[];
+    defaultConversation: mongoose.Types.ObjectId
 }
 
 const volunteerSchema: Schema<Volunteer> = new Schema({
@@ -65,7 +66,8 @@ const communitySchema: Schema<Community> = new Schema({
             ref: 'event',
             default: []
         }
-    ]
+    ],
+    
 });
 
 const communityModel = model<Community>('community', communitySchema);
