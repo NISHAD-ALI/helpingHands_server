@@ -1,32 +1,31 @@
-import { Server, Socket } from 'socket.io'
+import { Server, Socket } from 'socket.io';
 
-function socketServer (server:any){
+function socketServer(server: any) {
     const io = new Server(server, {
         cors: {
-            origin: '*'
+            origin: '*',
         }
     });
-    io.on('connection', (socket) => {
-        console.log('a user connected');
-      
+
+    io.on('connection', (socket: Socket) => {
+        console.log('A user connected:', socket.id);
+
         socket.on('joinGroup', (groupId) => {
-          socket.join(groupId);
+            console.log(`User joined group ${groupId}`);
+            socket.join(groupId);
         });
-      
+
         socket.on('sendMessage', async (data) => {
-            console.log(data)
-          const { sender, group, content } = data;
-
-          io.to(group).emit('receiveMessage',  { sender, group, content });
+            console.log('sendMessage event received:', data);
+            const { group, content, conversation, communityId } = data;
+            console.log(`Broadcasting message to group ${group}`);
+            io.to(group).emit('receiveMessage', data);
         });
-      
+
         socket.on('disconnect', () => {
-          console.log('user disconnected');
+            console.log('User disconnected:', socket.id);
         });
-      });
-      
-
+    });
 }
 
-
-export default socketServer
+export default socketServer;

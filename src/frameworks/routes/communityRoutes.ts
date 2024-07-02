@@ -55,7 +55,6 @@ router.get('/getEventsFilteredByCategory',(req,res)=>eventNewController.getEvent
 router.get('/getEventsFilteredByDay',(req,res)=>eventNewController.getEventsFilteredByDay(req,res))
 router.get('/searchEvents',(req,res)=>eventNewController.searchEvents(req,res))
 
-router.get("/messages/:id", (req,res)=>chatNewController.getCommunityDefaultMessages(req,res));
-router.get("/:communityId/volunteers", (req,res)=>chatNewController.getVolunteers(req,res));
+router.get("/messages/:id", (req,res)=>chatNewController.getMessages(req,res));
 router.post("/saveMessages", (req,res)=>chatNewController.sendMessage(req,res));
 export default router

@@ -5,9 +5,8 @@ const messageSchema:Schema<message> = new Schema({
     sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'volunteer',
-        required: true
     },
-    group: {
+    conversation: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Conversation',
         required: true
@@ -19,6 +18,10 @@ const messageSchema:Schema<message> = new Schema({
     timestamp: {
         type: Date,
         default: Date.now
+    },
+    group:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'community',
     }
 });
 

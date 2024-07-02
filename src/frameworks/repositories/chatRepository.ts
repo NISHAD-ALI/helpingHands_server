@@ -3,38 +3,49 @@ import messageModel from "../database/messageModel";
 import volunteerModel from "../database/volunteerModel";
 import communityModel from "../database/communityModel";
 import ConversationModel from "../database/conversationModel";
+import mongoose from "mongoose";
 
 class chatRepository {
-    async getMessagesByConversation(conversationId: string): Promise<message[]> {
+    async getMessagesByConversation(conversationId: string, role: string): Promise<message[]> {
+        
         let data = await messageModel.find({ conversation: conversationId })
-            .sort({ timestamp: -1 })
-            .populate('sender').exec();
-
+                .populate('group')
+                .populate('sender')
         return data
     }
-    async getVolunteersByCommunity(communityId: string) : Promise<any> {
-        let data = await volunteerModel.find({ communities: communityId }).populate('volunteers.volunteerId').exec();
-        return data
-    }
-    async getDefaultConversationByCommunity(communityId: string): Promise<any> {
-        console.log(communityId)
-        const community = await ConversationModel.findOne({communityId : communityId}).populate('messages')
-        console.log('-----------------------')
-        console.log(community)
-        console.log('-----------------------')
-        return community;
-    }
-    async saveMessage(sender: string, group: string, content: string): Promise<message> {
-        const newMessage = new messageModel({
-            sender,
-            group: group,
-            content,
-            timestamp: new Date()
-        });
-        await newMessage.save();
-        return newMessage;
+    async saveMessage(sender: string, group: string, content: string, conversation: string, communityId: string): Promise<message> {
+        try {
+
+            const newMessage = new messageModel({
+                sender,
+                conversation: conversation,
+                content,
+                timestamp: new Date(),
+                group: communityId
+            });
+
+            await newMessage.save();
+
+            return newMessage;
+        } catch (error) {
+            console.error("Error saving message:", error);
+            throw error;
+        }
     }
 
+    async fetchConversations(volunteerId: string): Promise<any> {
+        try {
+
+            const conversations = await ConversationModel.find({ participants: { $in: volunteerId } })
+                .populate('communityId')
+                .populate('participants');
+
+            return conversations
+        } catch (error) {
+            console.error("Error fetching conversation:", error);
+            throw error;
+        }
+    }
 
 }
 

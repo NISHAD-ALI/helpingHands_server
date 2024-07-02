@@ -7,19 +7,22 @@ class chatUsecase {
     constructor(chatRepo: chatRepository,) {
         this.chatRepo = chatRepo
     }
-  async getDefaultConversationMessages(communityId: string) {
-    const conversation = await this.chatRepo.getDefaultConversationByCommunity(communityId);
-    if (!conversation) {
-      throw new Error('Default conversation not found for the community');
-    }
-    return await this.chatRepo.getMessagesByConversation(conversation._id);
-  }
 
-  async getVolunteersInCommunity(communityId: string) {
-    return await this.chatRepo.getVolunteersByCommunity(communityId);
+  async getMessages(conversation: string,role:string) {
+    const response = await this.chatRepo.getMessagesByConversation(conversation,role);
+    return response
   }
-  async sendMessage(sender: string, group: string, content: string) {
-    return await this.chatRepo.saveMessage(sender, group, content);
+  async sendMessage(sender:string, group:string, content:string, conversation:string,communityId:string) {
+    return await this.chatRepo.saveMessage(sender, group, content, conversation,communityId);
+}
+async fetchConversation(id: string) {
+  try {
+      let response = await this.chatRepo.fetchConversations(id)
+      return response
+  } catch (error) {
+      console.error(error)
+      throw error
+  }
 }
 }
 

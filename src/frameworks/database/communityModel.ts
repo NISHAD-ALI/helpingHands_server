@@ -1,4 +1,5 @@
 import mongoose, { Schema, model, Document } from "mongoose";
+import ConversationModel from "../database/conversationModel";
 
 interface Volunteer {
     volunteerId: mongoose.Types.ObjectId;
@@ -16,7 +17,7 @@ interface Community extends Document {
     about?: string;
     is_blocked: boolean;
     events: mongoose.Types.ObjectId[];
-    defaultConversation: mongoose.Types.ObjectId
+    defaultConversation: mongoose.Types.ObjectId;
 }
 
 const volunteerSchema: Schema<Volunteer> = new Schema({
@@ -67,7 +68,35 @@ const communitySchema: Schema<Community> = new Schema({
             default: []
         }
     ],
-    
+    defaultConversation: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Conversation'
+    }
+});
+
+// Middleware to create default conversation on community creation
+communitySchema.pre<Community>('save', async function(next) {
+    if (!this.isNew) {
+        next();
+        return;
+    }
+
+    try {
+        // Create a new conversation for the community
+        const newConversation = new ConversationModel({
+            communityId: this._id,
+            participants: this.volunteers.map(volunteer => volunteer.volunteerId)
+        });
+
+        const savedConversation = await newConversation.save();
+
+        // Assign the created conversation's ID as default conversation
+        this.defaultConversation = savedConversation._id;
+
+        next();
+    } catch (error:any) {
+        next(error);
+    }
 });
 
 const communityModel = model<Community>('community', communitySchema);

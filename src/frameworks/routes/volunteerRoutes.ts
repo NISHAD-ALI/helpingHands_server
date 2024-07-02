@@ -12,6 +12,9 @@ import volunteerAuth from "../middlewares/volunteerAuth";
 import communityUsecase from "../../useCases/communityUsecase";
 import communityRepository from "../repositories/communityRepository";
 import communityController from "../../controllers/communityController";
+import chatController from "../../controllers/chatController";
+import chatUsecase from "../../useCases/chatUsecase";
+import chatRepository from "../repositories/chatRepository";
 
 const router = express.Router()
 const volunteerRepo = new volunteerRepository()
@@ -21,11 +24,15 @@ const mail = new SendMail()
 const hash = new HashPassword()
 const cloudinary = new Cloudinary()
 const communityRepo = new communityRepository()
+const chatRepo = new chatRepository()
 
 const useCase = new volunteerUseCases(volunteerRepo,otp,jwt,mail,hash,cloudinary)
 const volunteerController = new VolunteerController(useCase)
 const community = new communityUsecase(communityRepo,otp,jwt,mail,hash,cloudinary)
 const commController = new communityController(community)
+const chat = new chatUsecase(chatRepo)
+const chatNewController = new chatController(chat)
+
 
 router.post('/signup',(req,res)=>volunteerController.signup(req,res))
 router.post('/verifyOtp',(req,res)=>volunteerController.verifyOtp(req,res))
@@ -42,5 +49,9 @@ router.get('/getEvents',volunteerAuth,(req,res)=>volunteerController.getEvents(r
 router.post('/enrollToEvent',volunteerAuth,(req,res)=>volunteerController.enrollToEvent(req,res))
 router.get('/getNotEnrolledEvents',volunteerAuth,(req,res)=>volunteerController.getNotEnrolledEvents(req,res))
 router.get('/getEnrolledEvents',volunteerAuth,(req,res)=>volunteerController.getEnrolledEvents(req,res))
+
+router.post("/saveMessages", (req,res)=>chatNewController.sendMessage(req,res));
+router.get("/conversations/:id", (req,res)=>chatNewController.fetchConversation(req,res));
+router.get("/messages/:id", (req,res)=>chatNewController.getMessages(req,res));
 
 export default router

@@ -4,6 +4,7 @@ import ICommunityInterface from "../../useCases/interfaces/ICommunityInterface";
 import volunteerModel from "../database/volunteerModel";
 import volunteer from "../../entities/volunteer";
 import mongoose from "mongoose";
+import ConversationModel from "../database/conversationModel";
 
 class communityRepository implements ICommunityInterface {
     async findCommunityByEmail(email: string): Promise<community | null> {
@@ -68,12 +69,32 @@ class communityRepository implements ICommunityInterface {
                 throw new Error("Failed to update volunteer or community details");
             }
 
+            // Add the volunteer to the default conversation participants
+            const community = await communityModel.findById(communityId);
+            if (!community) {
+                throw new Error("Community not found");
+            }
+
+            const defaultConversationId = community.defaultConversation;
+            const volunteerId = new mongoose.Types.ObjectId(id);
+
+            const conversation = await ConversationModel.findByIdAndUpdate(
+                defaultConversationId,
+                { $addToSet: { participants: volunteerId } }, // Add volunteerId to participants
+                { new: true }
+            );
+
+            if (!conversation) {
+                throw new Error("Default conversation not found");
+            }
+
             return true;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             throw new Error("Failed to update volunteer details");
         }
     }
+
     async getVolunteers(id: string): Promise<volunteer[] | null> {
         try {
             let data = await communityModel.findById(id).populate('volunteers.volunteerId');
