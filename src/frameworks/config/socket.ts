@@ -15,6 +15,7 @@ function socketServer(server: any) {
         socket.on('sendMessage', async (data) => {
             const { group, content, conversation, communityId } = data;
             io.to(group).emit('receiveMessage', data);
+            io.emit('receiveNotification', { message: content });
         });
 
         socket.on('disconnect', () => {

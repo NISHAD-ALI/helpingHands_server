@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-import user from "../../entities/user"
+import user from "../../entities/user";
 
 const userSchema: Schema<user> = new Schema({
     name: {
@@ -18,10 +18,10 @@ const userSchema: Schema<user> = new Schema({
     },
     phone: {
         type: Number,
-
     },
     profileImage: {
-        type: String
+        type: String,
+        default: './src/assets/profile.jpg'
     },
     is_blocked: {
         type: Boolean,
@@ -41,11 +41,9 @@ const userSchema: Schema<user> = new Schema({
     donationsEssentials: {
         type: Number,
         default: 0
-    },
-
-})
+    }
+});
 
 const userModel = model<user>('user', userSchema);
 
 export default userModel;
-

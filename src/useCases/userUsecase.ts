@@ -35,7 +35,6 @@ class userUseCases {
                 console.log(otp)
                 let token = jwt.sign({ userData, otp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '10d' });
                 await this.sendMailOtp.sendMail(userData.email, otp)
-
                 return {
                     data: false,
                     token: token
@@ -48,15 +47,12 @@ class userUseCases {
     }
     async saveUserDB(token: string, userOtp: string) {
         try {
-            console.log("saveuserdb")
             let payload = this.jwt.verifyToken(token)
             if (payload) {
                 if (userOtp == payload.otp) {
                     let hashedPassword = await this.hashPassword.hashPassword(payload.userData.password)
-                    console.log(hashedPassword)
                     payload.userData.password = hashedPassword;
                     let newUser: any = await this.userRepo.saveUser(payload.userData);
-                    console.log(newUser)
                     if (newUser) {
                         let token = this.jwt.generateToken(newUser._id, 'user');
                         return { success: true, token };
@@ -78,7 +74,6 @@ class userUseCases {
     async login(email: string, password: string) {
         try {
             let data = await this.userRepo.findUserByEmail(email)
-            console.log(data)
             if (data) {
                 let checkPassword = await this.hashPassword.comparePassword(password, data.password)
                 if (!checkPassword) {
@@ -124,8 +119,6 @@ class userUseCases {
     }
     async googleSignup(name: string, email: string, password: string) {
         try {
-            console.log('in g sign');
-
             let exists = await this.userRepo.findUserByEmail(email)
             if (exists) {
                 return { success: false, mesaage: 'Email already Exists' }
@@ -210,7 +203,6 @@ class userUseCases {
     async payDonation(amount :any,userId:string,donationId:string) {
         try {
             const response = await this.stripe.createCheckoutSession(amount);
-            console.log(donationId)
             const data = await this.userRepo.donation(amount,userId,donationId)
             if(data){
 
