@@ -9,10 +9,7 @@ class chatController {
   async getMessages(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      console.log(id)
-      const { role } = req.query;
-      console.log(role,"in get messages")
-      const messages = await this.chatUsecase.getMessages(id,role as string);
+      const messages = await this.chatUsecase.getMessages(id);
       
       res.status(200).json(messages);
     } catch (error: any) {
@@ -21,7 +18,8 @@ class chatController {
   }
   async sendMessage(req: Request, res: Response) {
     try {
-      const { sender, group, content, communityId, conversation } = req.body;
+      const {message} = req.body
+      const { sender, group, content, communityId, conversation } = message
       console.log(sender, group, content, communityId, conversation,"---")
       const data = await this.chatUsecase.sendMessage(sender, group, content, conversation,communityId);
       res.status(201).json({ success: true, data });

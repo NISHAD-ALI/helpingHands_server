@@ -42,7 +42,7 @@ export const startServer = () => {
         const app = createServer();
 
         app?.listen(3001, () => {
-            console.log("server is running");
+            console.log("server is running @ 3001");
         });
     } catch (error) {
         console.log(error);

@@ -6,7 +6,7 @@ import ConversationModel from "../database/conversationModel";
 import mongoose from "mongoose";
 
 class chatRepository {
-    async getMessagesByConversation(conversationId: string, role: string): Promise<message[]> {
+    async getMessagesByConversation(conversationId: string): Promise<message[]> {
         
         let data = await messageModel.find({ conversation: conversationId })
                 .populate('group')

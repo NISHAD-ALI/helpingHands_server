@@ -8,8 +8,8 @@ class chatUsecase {
         this.chatRepo = chatRepo
     }
 
-  async getMessages(conversation: string,role:string) {
-    const response = await this.chatRepo.getMessagesByConversation(conversation,role);
+  async getMessages(conversation: string) {
+    const response = await this.chatRepo.getMessagesByConversation(conversation);
     return response
   }
   async sendMessage(sender:string, group:string, content:string, conversation:string,communityId:string) {
