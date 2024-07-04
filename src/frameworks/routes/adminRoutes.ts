@@ -30,6 +30,7 @@ router.post('/createDonation',uploadFile.single('image'),(req,res)=>Controller.c
 router.get('/getDonations',(req,res)=>Controller.getDonations(req,res))
 router.get('/getAllReports',(req,res)=>Controller.getAllReports(req,res))
 router.post('/terminatePost',(req,res)=>Controller.terminatePost(req,res))
-
+router.get('/getAllVolunteers',(req,res)=>Controller.getAllvolunteers(req,res))
+router.get('/getAllEvents',(req,res)=>Controller.getEvents(req,res))
 
 export default router

@@ -11,5 +11,7 @@ interface IAdminInterface{
     createDonation(donation: donations): Promise<donations | null>,
     getDonations():Promise<donations | null>
     getAllReports():Promise<any | null>
+    getAllVolunteeers(): Promise<any | null>
+    getEvents(): Promise<any | null>
 }
 export default IAdminInterface;

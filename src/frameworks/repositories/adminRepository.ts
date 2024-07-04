@@ -8,6 +8,8 @@ import userModel from "../database/userModel";
 import donations from "../../entities/donations";
 import donationModel from "../database/donationModel";
 import reportPostModel from "../database/reportPostModel";
+import volunteerModel from "../database/volunteerModel";
+import eventModel from "../database/eventModel";
 
 class adminRepository implements IAdminInterface {
     async findAdminByEmail(email: string): Promise<admin | null> {
@@ -23,7 +25,7 @@ class adminRepository implements IAdminInterface {
     }
     async getCommunities():Promise<community | null>{
         try {
-            let data: any = await communityModel.find({})
+            let data: any = await communityModel.find({}).populate('events')
             return data
         } catch (error : any) {
             console.error(error.message)
@@ -86,7 +88,26 @@ class adminRepository implements IAdminInterface {
             throw new Error('Unable to fetch list of reports');
         }
     }
-    
+    async getAllVolunteeers(): Promise<any | null> {
+        try {
+            let data: any = await volunteerModel
+                .find({})
+            return data;
+        } catch (error: any) {
+            console.error(error.message);
+            throw new Error('Unable to fetch list of volunteers');
+        }
+    }
+    async getEvents(): Promise<any | null> {
+        try {
+            let data: any = await eventModel
+                .find({})
+            return data;
+        } catch (error: any) {
+            console.error(error.message);
+            throw new Error('Unable to fetch list of events');
+        }
+    }
     
 }
 

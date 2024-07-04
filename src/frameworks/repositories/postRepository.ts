@@ -168,6 +168,15 @@ class postRepository implements IPostInterface {
           throw new Error(error.message || 'Failed to report post');
         }
       }
+      async getAllReportedPosts(): Promise<post | null> {
+        try {
+            let data: any = await reportPostModel.find({}).sort({_id:-1}).populate('postId')
+            return data
+        } catch (error: any) {
+            console.error(error.message)
+            throw new Error('unable to fetch list of reportedposts')
+        }
+    }
 }
 
 export default postRepository

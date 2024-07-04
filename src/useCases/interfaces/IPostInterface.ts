@@ -11,4 +11,5 @@ export default interface IPostInterface {
     addComment(postId: string, comment: any): Promise<boolean>
     getComments(postId: string): Promise<post | null>
     reportPost(postId:string,userId:string,message:string): Promise<boolean>
+    getAllReportedPosts(): Promise<post | null>
 }

@@ -15,33 +15,66 @@ declare global {
 
 const userAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies.userToken;
-
-        if (!token) {
-            return res.status(401).json({ success: false, message: "Unauthorized Access - No valid token" });
+        const accessToken = req.cookies.userToken;
+       console.log("at::",accessToken)
+        if (!accessToken) {
+            return res.status(401).json({ success: false, message: "Unauthorized Access - No valid access token" });
         }
 
-        const decode = jwt.verifyToken(token);
+        const accessPayload = jwt.verifyToken(accessToken);
 
-        if (!decode || decode.role !== 'user') {
-            return res.status(401).json({ success: false, message: "Unauthorized Access - Invalid token" });
+        if (!accessPayload || accessPayload.role !== 'user') {
+            return res.status(401).json({ success: false, message: "Unauthorized Access - Invalid access token" });
         }
 
-        const user = await userRepo.findUserById(decode.id);
+        const user = await userRepo.findUserById(accessPayload.id);
 
         if (user?.is_blocked) {
             return res.status(401).json({ success: false, message: "User is blocked by admin" });
         }
 
-        req.userId = decode.id;
+        req.userId = accessPayload.id;
         return next();
 
     } catch (error: any) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
+        console.log("token expired name::::",error)
+        if (error.name === 'Error') {
+            const refreshToken = req.cookies.refreshToken;
+
+            if (!refreshToken) {
+                return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
+            }
+
+            const refreshPayload = jwt.verifyRefreshToken(refreshToken);
+
+            if (!refreshPayload) {
+                return res.status(401).json({ success: false, message: "Invalid refresh token" });
+            }
+
+            const newAccessToken = jwt.generateToken(refreshPayload.id, 'user');
+            const newRefreshToken = jwt.generateRefreshToken(refreshPayload.id, 'user');
+
+            res.cookie('userToken', newAccessToken, {
+                expires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+
+            res.cookie('refreshUserToken', newRefreshToken, {
+                expires: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 days
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+
+            req.userId = refreshPayload.id;
+            return next();
         }
+
         return res.status(401).json({ success: false, message: "Unauthorized Access - Invalid token" });
     }
 };
+
 
 export default userAuth;

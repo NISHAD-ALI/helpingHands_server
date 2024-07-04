@@ -148,6 +148,32 @@ class adminController{
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
+    async getAllvolunteers(req: Request, res: Response){
+        try {
+            let volunteers = await this.adminUsecase.getAllVolunteers()
+            if (volunteers) {
+                res.status(200).json({ success: true, volunteers })
+            } else {
+                res.status(500).json({ success: false, message: "Please try again" })
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async getEvents(req: Request, res: Response){
+        try {
+            let events = await this.adminUsecase.getEvents()
+            if (events) {
+                res.status(200).json({ success: true, events })
+            } else {
+                res.status(500).json({ success: false, message: "Please try again" })
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
 }
 
 export default adminController

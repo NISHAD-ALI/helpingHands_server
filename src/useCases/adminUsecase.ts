@@ -122,6 +122,24 @@ class adminUsecase {
             throw error;
         }
     }
+    async getAllVolunteers(){
+        try {
+            let data = await this.adminRepo.getAllVolunteeers()
+            return data
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    async getEvents(){
+        try {
+            let data = await this.adminRepo.getEvents()
+            return data
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 export default adminUsecase

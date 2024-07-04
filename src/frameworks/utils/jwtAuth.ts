@@ -15,7 +15,7 @@ class Jwt {
     generateToken(id: string, role: string): string {
         try {
             const payload = { id, role };
-            const token = jwt.sign(payload, this.jwtSecret, { expiresIn: '30m' });
+            const token = jwt.sign(payload, this.jwtSecret, { expiresIn: '1m' });
             return token;
         } catch (error) {
             console.error('Error while generating token:', error);

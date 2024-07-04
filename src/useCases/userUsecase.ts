@@ -73,35 +73,41 @@ class userUseCases {
     }
     async login(email: string, password: string) {
         try {
-            let data = await this.userRepo.findUserByEmail(email)
-            if (data) {
-                let checkPassword = await this.hashPassword.comparePassword(password, data.password)
-                if (!checkPassword) {
+            const userData = await this.userRepo.findUserByEmail(email);
+
+            if (userData) {
+                const isPasswordCorrect = await this.hashPassword.comparePassword(password, userData.password);
+
+                if (!isPasswordCorrect) {
                     return {
                         success: false,
                         message: 'Incorrect Password'
-                    }
-                } else if (data.is_blocked) {
+                    };
+                }
+
+                if (userData.is_blocked) {
                     return {
                         success: false,
                         message: "You've been blocked by admin"
-                    }
-                } else {
-                    let token = this.jwt.generateToken(data._id, 'user')
-                    return {
-                        success: true,
-                        token: token
-                    }
+                    };
                 }
+                const accessToken = this.jwt.generateToken(userData._id, 'user');
+                const refreshToken = this.jwt.generateRefreshToken(userData._id, 'user');
+
+                return {
+                    success: true,
+                    token: accessToken,
+                    refreshToken: refreshToken
+                };
             } else {
                 return {
                     success: false,
                     message: 'Email not found'
-                }
+                };
             }
         } catch (error) {
-            console.error(error)
-            throw error
+            console.error("Error during login:", error);
+            throw error;
         }
     }
     async resendOtp(token: string) {
@@ -119,25 +125,26 @@ class userUseCases {
     }
     async googleSignup(name: string, email: string, password: string) {
         try {
-            let exists = await this.userRepo.findUserByEmail(email)
+            let exists = await this.userRepo.findUserByEmail(email);
             if (exists) {
-                return { success: false, mesaage: 'Email already Exists' }
+                return { success: false, message: 'Email already exists' };
             } else {
-                const hashedPassword = await this.hashPassword.hashPassword(password)
-                const saveUser = await this.userRepo.saveUser({ name, email, password: hashedPassword } as user)
+                const hashedPassword = await this.hashPassword.hashPassword(password);
+                const saveUser = await this.userRepo.saveUser({ name, email, password: hashedPassword } as user);
                 if (saveUser) {
-                    const token = this.jwt.generateToken(saveUser._id, 'user')
-                    return { success: true, token }
+                    const accessToken = this.jwt.generateToken(saveUser._id, 'user');
+                    const refreshToken = this.jwt.generateRefreshToken(saveUser._id, 'user');
+                    return { success: true, token: accessToken, refreshToken };
                 } else {
-                    return { success: false, message: 'Internal Server Error' }
+                    return { success: false, message: 'Internal server error' };
                 }
             }
         } catch (error) {
-            console.error(error)
-            throw error
+            console.error(error);
+            throw error;
         }
-
     }
+    
     async forgetPassword(email: string) {
         try {
             let exists = await this.userRepo.findUserByEmail(email)

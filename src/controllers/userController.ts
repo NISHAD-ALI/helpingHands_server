@@ -56,28 +56,42 @@ class UserController {
     }
     
 
+
     async login(req: Request, res: Response) {
         try {
             const { email, password } = req.body;
-            let checkUser = await this.userUsecase.login(email, password);
-            if (checkUser.success) {
-                res.cookie('userToken', checkUser.token, {
-                    expires: new Date(Date.now() + 25892000000),
+            const loginResult = await this.userUsecase.login(email, password);
+
+            if (loginResult.success) {
+                const { token, refreshToken } = loginResult;
+
+                res.cookie('userToken', token, {
+                    expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
                     sameSite: 'strict',
                     path: '/',
                 });
-                res.status(200).json({ success: true, token: checkUser.token });
+
+                res.cookie('refreshToken', refreshToken, {
+                    expires: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 days
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    path: '/',
+                });
+
+                res.status(200).json({ success: true, token });
             } else {
-                console.log(checkUser.message);
-                res.status(401).json({ success: false, message: checkUser.message });
+                console.log(loginResult.message);
+                res.status(401).json({ success: false, message: loginResult.message });
             }
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
+
 
     async logout(req: Request, res: Response) {
         try {
@@ -87,12 +101,21 @@ class UserController {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
             });
+    
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
+    
             res.status(200).json({ success: true });
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
+    
 
 
     async resendOtp(req: Request, res: Response) {
@@ -116,7 +139,16 @@ class UserController {
                     sameSite: 'strict',
                     path: '/',
                 });
-
+                if (saveUser.refreshToken) {
+                    res.cookie('refreshToken', saveUser.refreshToken, {
+                        expires: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 days
+                        httpOnly: true,
+                        secure: process.env.NODE_ENV === 'production',
+                        sameSite: 'strict',
+                        path: '/',
+                    });
+                }
+    
                 res.status(200).json({ success: true, token: saveUser.token });
             } else {
                 res.status(401).json({ success: false, message: saveUser.message });
@@ -126,7 +158,6 @@ class UserController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
-
     async forgetPassword(req: Request, res: Response) {
         try {
             const email = req.body.email
