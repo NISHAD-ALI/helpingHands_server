@@ -52,7 +52,8 @@ const communitySchema: Schema<Community> = new Schema({
     },
     volunteers: [volunteerSchema],
     profileImage: {
-        type: String
+        type: String,
+        default: './src/assets/profile.jpg'
     },
     about: {
         type: String

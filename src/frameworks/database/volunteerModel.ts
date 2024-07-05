@@ -21,7 +21,8 @@ const volunteerSchema: Schema<volunteer> = new Schema({
 
     },
     profileImage: {
-        type: String
+        type: String,
+         default: './src/assets/profile.jpg'
     },
     is_blocked: {
         type: Boolean,
