@@ -118,6 +118,25 @@ class postUsecase {
             throw error;
         }
     }
+    async savePost(postData : post,userId:string){
+        try {
+            let response = await this.postRepo.savedPost(postData,userId)
+            console.log(response + "->api response")
+            return response
+        } catch (error) {
+            console.log("EEE",error);
+            throw error;
+        }
+    }
+    async getSavedPosts(id:string){
+        try {
+            let data = await this.postRepo.getSavedPosts(id)
+            return data
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 
 export default postUsecase

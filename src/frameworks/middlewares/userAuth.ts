@@ -16,7 +16,6 @@ declare global {
 const userAuth = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const accessToken = req.cookies.userToken;
-       console.log("at::",accessToken)
         if (!accessToken) {
             return res.status(401).json({ success: false, message: "Unauthorized Access - No valid access token" });
         }
@@ -37,7 +36,6 @@ const userAuth = async (req: Request, res: Response, next: NextFunction) => {
         return next();
 
     } catch (error: any) {
-        console.log("token expired name::::",error)
         if (error.name === 'Error') {
             const refreshToken = req.cookies.refreshToken;
 

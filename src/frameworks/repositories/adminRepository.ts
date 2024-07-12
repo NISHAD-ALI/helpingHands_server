@@ -15,7 +15,6 @@ class adminRepository implements IAdminInterface {
     async findAdminByEmail(email: string): Promise<admin | null> {
         try {
             let data = await adminModel.findOne({ email: email })
-            console.log(data+"in repo")
             return data ? data.toObject() : null
         } catch (error: any) {
             console.error(error.message)
@@ -53,6 +52,20 @@ class adminRepository implements IAdminInterface {
         } catch (err) {
             console.log(err);
             throw new Error("Failed to block user")
+        }
+    }
+    async blockCommunity(id: string): Promise<boolean> {
+        try {
+            let community = await communityModel.findById(id);
+            if (community) {
+                await communityModel.findByIdAndUpdate(id, { $set: { is_blocked: !community.is_blocked } })
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+            throw new Error("Failed to block community")
         }
     }
     async createDonation(donation: donations): Promise<donations | null> {
@@ -108,7 +121,15 @@ class adminRepository implements IAdminInterface {
             throw new Error('Unable to fetch list of events');
         }
     }
-    
+    async  deleteDonation(id: string): Promise<boolean | null> {
+        try {
+            let donation = await donationModel.deleteOne({ _id: id });
+            return donation.acknowledged;
+        } catch (error: any) {
+            console.error(error.message)
+            throw new Error('unable to delete donation')
+        }
+    }
 }
 
 export default adminRepository

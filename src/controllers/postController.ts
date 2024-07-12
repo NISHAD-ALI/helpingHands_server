@@ -99,7 +99,6 @@ class postController {
             }
             if (newData) {
                 let updated = await this.postUsecase.editPost(id, newData);
-                console.log("editing"+updated)
                 if (updated) {
                     res.status(200).json({ success: true });
 
@@ -197,6 +196,36 @@ class postController {
         } catch (error) {
             console.error(error)
             res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async savePost(req: Request, res: Response) {
+        try {
+            let userId = req.userId
+            const {post} = req.body
+            const response = await this.postUsecase.savePost(post,userId as string)
+            if (response) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Cannot save post!' })
+            }
+
+        } catch (error :any) {
+            console.error('Error saving post:', error);
+            res.status(500).json({ success: false, message:error.message });
+        }
+    }
+    async getSavedPosts(req: Request, res: Response) {
+        try {
+            let userId = req.userId
+            let posts = await this.postUsecase.getSavedPosts(userId as string)
+            if (posts) {
+                res.status(200).json({ success: true, posts })
+            } else {
+                res.status(500).json({ success: false, message: "Internal server error2" })
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ success: false, message: "Internal server error1" })
         }
     }
 }

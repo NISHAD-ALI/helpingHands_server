@@ -26,11 +26,13 @@ router.get('/logout',(req,res)=>Controller.logout(req,res))
 router.get('/getCommunities',(req,res)=>Controller.getAllCommunities(req,res))
 router.get('/getUsers',(req,res)=>Controller.getUsers(req,res))
 router.post('/blockUser/:id',(req,res)=>Controller.blockUser(req,res))
+router.post('/blockCommunity/:id',(req,res)=>Controller.blockCommunity(req,res))
 router.post('/createDonation',uploadFile.single('image'),(req,res)=>Controller.createDonation(req,res))
 router.get('/getDonations',(req,res)=>Controller.getDonations(req,res))
 router.get('/getAllReports',(req,res)=>Controller.getAllReports(req,res))
 router.post('/terminatePost',(req,res)=>Controller.terminatePost(req,res))
 router.get('/getAllVolunteers',(req,res)=>Controller.getAllvolunteers(req,res))
 router.get('/getAllEvents',(req,res)=>Controller.getEvents(req,res))
+router.delete('/deleteDonation/:id',(req,res)=>Controller.deleteDonation(req,res))
 
 export default router

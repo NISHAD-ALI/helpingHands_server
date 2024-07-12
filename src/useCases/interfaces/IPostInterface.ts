@@ -1,4 +1,5 @@
 import post from "../../entities/post";
+import savedPost from "../../entities/savedPosts";
 
 export default interface IPostInterface {
     createPost(post: post): Promise<post | null>,
@@ -11,5 +12,7 @@ export default interface IPostInterface {
     addComment(postId: string, comment: any): Promise<boolean>
     getComments(postId: string): Promise<post | null>
     reportPost(postId:string,userId:string,message:string): Promise<boolean>
-    getAllReportedPosts(): Promise<post | null>
+    getAllReportedPosts(): Promise<post | null>,
+    savedPost(post: post,userId:string): Promise<boolean | null>
+    getSavedPosts(userId:string): Promise<any[] | null>
 }

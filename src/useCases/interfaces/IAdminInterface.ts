@@ -13,5 +13,7 @@ interface IAdminInterface{
     getAllReports():Promise<any | null>
     getAllVolunteeers(): Promise<any | null>
     getEvents(): Promise<any | null>
+    blockCommunity(id: string): Promise<boolean>
+    deleteDonation(id: string): Promise<boolean | null>
 }
 export default IAdminInterface;

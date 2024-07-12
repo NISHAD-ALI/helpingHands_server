@@ -86,6 +86,21 @@ class adminController{
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
+    async blockCommunity(req: Request, res: Response){
+        try {
+            let userId = req.params.id;
+            console.log('userid' + userId)
+            let blocked = await this.adminUsecase.blockCommunity(userId);
+            if (blocked) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(200).json({ success: false, message: "Internal server error" })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
     async createDonation(req:Request,res:Response){
         try {
            const {fundraiserName,email, targetAmount, donationType, startDate, endDate, contactAddress,details} = req.body
@@ -171,6 +186,21 @@ class adminController{
             }
         } catch (error) {
             console.error(error)
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+    async deleteDonation(req: Request, res: Response){
+        try {
+            let id = req.params.id;
+            console.log('id' + id)
+            let deleted = await this.adminUsecase.deleteDonation(id);
+            if (deleted) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(200).json({ success: false, message: "Internal server error" })
+            }
+        } catch (error) {
+            console.log(error);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }

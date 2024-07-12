@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose"
 import comment from "./comment"
 interface post {
     _id?: string
-    userId: ObjectId
+    userId: ObjectId | string
     title: string
     image: string
     likes?: Array<ObjectId>

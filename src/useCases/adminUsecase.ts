@@ -75,6 +75,15 @@ class adminUsecase {
             throw err;
         }
     }
+    async blockCommunity(id: string) {
+        try {
+            let blocked = await this.adminRepo.blockCommunity(id);
+            return blocked;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
     async createDonation(donation : donations){
         try {
             let images = donation.image
@@ -138,6 +147,15 @@ class adminUsecase {
         } catch (error) {
             console.log(error);
             throw error;
+        }
+    }
+    async deleteDonation(id: string) {
+        try {
+            let donation = await this.adminRepo.deleteDonation(id);
+            return donation;
+        } catch (err) {
+            console.log(err);
+            throw err;
         }
     }
 }

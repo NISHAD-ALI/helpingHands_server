@@ -32,7 +32,8 @@ const donationSchema : Schema<donations> = new mongoose.Schema({
         type:String
     },
     amountCollected:{
-        type:Number
+        type:Number,
+        default:0
     },
     donatedUsers: [
         {

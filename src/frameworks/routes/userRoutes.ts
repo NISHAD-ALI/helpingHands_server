@@ -51,5 +51,7 @@ router.get('/isLiked/:id',userAuth,(req,res)=>postControl.isLiked(req,res))
 router.post('/addComment/:id',userAuth,(req,res)=>postControl.addComment(req,res))
 router.get('/getComments/:id',(req,res)=>postControl.getComments(req,res))
 router.post('/reportPost',userAuth,(req,res)=>postControl.reportPost(req,res))
+router.post('/savePost',userAuth,(req,res)=>postControl.savePost(req,res))
+router.get('/getSavedPosts',userAuth,(req,res)=>postControl.getSavedPosts(req,res))
 
 export default router
