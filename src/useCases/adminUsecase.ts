@@ -1,6 +1,4 @@
-import admin from "../entities/admin";
 import IAdminInterface from "./interfaces/IAdminInterface";
-import jwt, { JwtPayload } from 'jsonwebtoken'
 import Jwt from "../frameworks/utils/jwtAuth";
 import HashPassword from "../frameworks/utils/hashedPassword";
 import donations from "../entities/donations";

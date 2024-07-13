@@ -1,9 +1,7 @@
-import community from "../entities/community";
 import events from "../entities/events";
 import Cloudinary from "../frameworks/utils/cloudinary";
 import IEventInterface from "./interfaces/IEventInterface";
 import Jwt from "../frameworks/utils/jwtAuth";
-import jwt, { JwtPayload } from 'jsonwebtoken'
 
 class eventUsecase {
     private eventRepo: IEventInterface;
