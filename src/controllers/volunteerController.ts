@@ -13,9 +13,7 @@ class VolunteerController {
         try {
             const { name, email, password, phone } = req.body
             const volunteerData = { name, email, password, phone }
-            console.log("volunteerData:",volunteerData)
             const exists = await this.volunteerUseCases.findVolunteer(volunteerData as volunteer)
-            console.log(exists)
             if (!exists.data) {
                 const token = exists.token
                 const volunteer = await volunteerModel.findOne({ email: email });
@@ -34,11 +32,14 @@ class VolunteerController {
         try {
             let token = req.headers.authorization?.split(' ')[1] as string
             let otp = req.body.otp
-            let saveToDB = this.volunteerUseCases.saveVolunteerDB(token,otp)
+            let saveToDB = this.volunteerUseCases.saveVolunteerDB(token, otp)
             if ((await saveToDB).success) {
                 res.cookie('volunteerToken', (await saveToDB).token, {
                     expires: new Date(Date.now() + 25892000000),
-                    httpOnly: true
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    path: '/',
                 })
                 res.status(200).json(saveToDB)
             } else {
@@ -53,18 +54,17 @@ class VolunteerController {
     async login(req: Request, res: Response) {
         try {
             const { email, password } = req.body;
-            let checkVolunteer = await this.volunteerUseCases.login(email,password)
+            let checkVolunteer = await this.volunteerUseCases.login(email, password)
             if (checkVolunteer.success) {
                 res.cookie('volunteerToken', checkVolunteer.token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: true,
+                    sameSite: 'none',
                     path: '/',
                 });
                 res.status(200).json({ success: true, token: checkVolunteer.token });
             } else {
-                console.log(checkVolunteer.message);
                 res.status(401).json({ success: false, message: checkVolunteer.message });
             }
         } catch (error) {
@@ -72,23 +72,23 @@ class VolunteerController {
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
-    
+
     async logout(req: Request, res: Response) {
         try {
             res.clearCookie('volunteerToken', {
                 httpOnly: true,
+                secure: true,
+                sameSite: 'none',
                 path: '/',
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
             });
-  
+
             res.status(200).json({ success: true });
         } catch (error) {
             console.error(error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
-    
+
 
     async resendOtp(req: Request, res: Response) {
         try {
@@ -99,30 +99,7 @@ class VolunteerController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    // async googleAuth(req: Request, res: Response) {
-    //     try {
-    //         const { name, email, password } = req.body;
-    //         const saveUser = await this.userUsecase.googleSignup(name, email, password);
-    
-    //         if (saveUser.success) {
-    //             res.cookie('volunteerToken', saveUser.token, {
-    //                 expires: new Date(Date.now() + 25892000000),
-    //                 httpOnly: true,
-    //                 secure: process.env.NODE_ENV === 'production',
-    //                 sameSite: 'strict',
-    //                 path: '/',
-    //             });
-    
-    //             res.status(200).json({ success: true, token: saveUser.token });
-    //         } else {
-    //             res.status(401).json({ success: false, message: saveUser.message });
-    //         }
-    //     } catch (error) {
-    //         console.error(error);
-    //         res.status(500).json({ success: false, message: "Internal server error" });
-    //     }
-    // }
-    
+
     async forgetPassword(req: Request, res: Response) {
         try {
             const email = req.body.email
@@ -152,11 +129,8 @@ class VolunteerController {
     }
     async changePassword(req: Request, res: Response) {
         try {
-            console.log("enfenirbu")
-            // let newPassword = req.body.password
-            // let id = req.body.id
-              const {password,id} = req.body
-            let response = await this.volunteerUseCases.changePassword(password,id)
+            const { password, id } = req.body
+            let response = await this.volunteerUseCases.changePassword(password, id)
             if (response) {
                 res.status(200).json({ success: true })
             } else {
@@ -166,34 +140,26 @@ class VolunteerController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async getProfile(req:Request,res:Response){
+    async getProfile(req: Request, res: Response) {
         try {
-            console.log('in get')
             let volunteerId = req.volunteerId
-            console.log(req.volunteerId);
-            
-            if(volunteerId){
+            if (volunteerId) {
                 let data = await this.volunteerUseCases.getProfile(volunteerId)
-                res.status(200).json({ success: true,data })
-            }else{
+                res.status(200).json({ success: true, data })
+            } else {
                 res.status(402).json({ success: false, message: 'Failed to volunteer profile!' })
             }
         } catch (error) {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async editProfile(req:Request,res:Response){
+    async editProfile(req: Request, res: Response) {
         try {
-            console.log("kk")
             const volunteerId = req.volunteerId
-            console.log("in edit"+volunteerId)
             const newData = req.body
-            console.log(newData)
             let profileImage = req.file
-            console.log(profileImage)
-            newData.profileImage = profileImage 
+            newData.profileImage = profileImage
             if (volunteerId) {
-                console.log("hi")
                 let updated = await this.volunteerUseCases.editProfile(volunteerId, newData);
                 if (updated) {
                     res.status(200).json({ success: true });
@@ -208,14 +174,14 @@ class VolunteerController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async enrollToCommunity(req:Request,res:Response){
+    async enrollToCommunity(req: Request, res: Response) {
         try {
-               const {communityId,volunteerId} = req.body
-            
-            if(volunteerId && communityId){
-                let data = await this.volunteerUseCases.enrollToCommunity(communityId,volunteerId)
-                res.status(200).json({ success: true,data })
-            }else{
+            const { communityId, volunteerId } = req.body
+
+            if (volunteerId && communityId) {
+                let data = await this.volunteerUseCases.enrollToCommunity(communityId, volunteerId)
+                res.status(200).json({ success: true, data })
+            } else {
                 res.status(402).json({ success: false, message: 'Failed to volunteer profile!' })
             }
         } catch (error) {
@@ -224,11 +190,9 @@ class VolunteerController {
     }
     async getVolunteerById(req: Request, res: Response) {
         try {
-            console.log("in controller");
-            console.log(req.query.id);
             let ids = req.query.id;
             if (Array.isArray(ids)) {
-                let data:any[] = [];
+                let data: any[] = [];
                 for (let id of ids) {
                     let volunteerData = await this.volunteerUseCases.findVolunteerById(id);
                     data.push(volunteerData);
@@ -247,63 +211,56 @@ class VolunteerController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async getEvents(req:Request,res:Response){
+    async getEvents(req: Request, res: Response) {
         try {
-            console.log('in get')
             let volunteerId = req.volunteerId
-            console.log(req.volunteerId);
-            
-            if(volunteerId){
+
+            if (volunteerId) {
                 let data = await this.volunteerUseCases.getEvents(volunteerId)
-                res.status(200).json({ success: true,data })
-            }else{
+                res.status(200).json({ success: true, data })
+            } else {
                 res.status(402).json({ success: false, message: 'Failed to volunteer!' })
             }
         } catch (error) {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async enrollToEvent(req:Request,res:Response){
+    async enrollToEvent(req: Request, res: Response) {
         try {
-               const {eventId} = req.body
-               const volunteerId = req.volunteerId
-               console.log(eventId)
-            if(volunteerId && eventId){
-                let data = await this.volunteerUseCases.enrollToEvent(volunteerId,eventId)
-                res.status(200).json({ success: true,data })
-            }else{
+            const { eventId } = req.body
+            const volunteerId = req.volunteerId
+            if (volunteerId && eventId) {
+                let data = await this.volunteerUseCases.enrollToEvent(volunteerId, eventId)
+                res.status(200).json({ success: true, data })
+            } else {
                 res.status(402).json({ success: false, message: 'Failed to enroll to the selected event!' })
             }
-        } catch (error :any) {
+        } catch (error: any) {
             res.status(500).json({ success: false, message: error.message || 'Failed to enroll to the selected event!' });
         }
     }
-    async getNotEnrolledEvents(req:Request,res:Response){
+    async getNotEnrolledEvents(req: Request, res: Response) {
         try {
-            console.log('in get')
             let volunteerId = req.volunteerId
-            console.log(req.volunteerId);
-            
-            if(volunteerId){
+
+            if (volunteerId) {
                 let data = await this.volunteerUseCases.notEnrolledEvents(volunteerId)
-                res.status(200).json({ success: true,data })
-            }else{
+                res.status(200).json({ success: true, data })
+            } else {
                 res.status(402).json({ success: false, message: 'Failed to volunteer!' })
             }
         } catch (error) {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
-    async getEnrolledEvents(req:Request,res:Response){
+    async getEnrolledEvents(req: Request, res: Response) {
         try {
-            console.log('in get')
             let volunteerId = req.volunteerId
-            console.log(req.volunteerId);
-            
-            if(volunteerId){
+
+            if (volunteerId) {
                 let data = await this.volunteerUseCases.enrolledEvents(volunteerId)
-                res.status(200).json({ success: true,data })
-            }else{
+                res.status(200).json({ success: true, data })
+            } else {
                 res.status(402).json({ success: false, message: 'Failed to volunteer!' })
             }
         } catch (error) {

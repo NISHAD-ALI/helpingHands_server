@@ -20,7 +20,6 @@ const communityAuth = async (req: Request, res: Response, next: NextFunction) =>
         if (!token) {
             return res.status(401).json({ success: false, message: "Unauthorized Access - No valid token" });
         }
-
         const decode = jwt.verifyToken(token);
 
         if (!decode || decode.role !== 'community') {

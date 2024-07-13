@@ -13,7 +13,6 @@ class Cloudinary implements ICloudinary {
             const result = await v2.uploader.upload(image?.path, {
                 resource_type: "image"
             });
-            console.log(result); 
             return result.secure_url; 
         } catch (error: any) {
             console.error("Error uploading image to Cloudinary:", error);
@@ -27,7 +26,6 @@ class Cloudinary implements ICloudinary {
             const result = await v2.uploader.upload(video?.path, {
                 resource_type: "video"
             });
-            console.log(result);
             return result.secure_url; 
         } catch (error: any) {
             console.error("Error uploading video to Cloudinary:", error);
@@ -40,7 +38,6 @@ class Cloudinary implements ICloudinary {
                 return await this.uploadImageToCloud(image);
             });
             const uploadedUrls = await Promise.all(uploadPromises);
-            console.log("Uploaded image URLs:", uploadedUrls);
             return uploadedUrls;
         } catch (error: any) {
             console.error("Error uploading images array to Cloudinary:", error);

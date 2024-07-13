@@ -8,7 +8,6 @@ class eventRepository implements IEventInterface {
         try {
             let newEvent = new eventModel(events);
             await newEvent.save();
-            console.log('Saved to DB:', newEvent);
             await communityModel.updateOne(
                 { _id: newEvent.communId },
                 { $push: { events: newEvent._id } }

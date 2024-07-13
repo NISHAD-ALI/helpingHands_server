@@ -28,8 +28,6 @@ class adminUsecase {
     async login(email: string, password: string) {
         try {
             let findAdmin: any = await this.adminRepo.findAdminByEmail(email);
-            console.log(findAdmin,email+"1111111");
-            
             if (findAdmin) {
                 let passwordCheck = await this.hashPassword.comparePassword(password, findAdmin.password);
                 if (passwordCheck) {
@@ -85,13 +83,9 @@ class adminUsecase {
     async createDonation(donation : donations){
         try {
             let images = donation.image
-            console.log(images)
             let uploadImages = await this.cloudinary.uploadImageToCloud(images)
             donation.image = uploadImages
-            console.log("hi");
-            
             let response = await this.adminRepo.createDonation(donation)
-            console.log(response + "-> useCase response")
             return response
         } catch (error) {
             console.log(error);
@@ -119,10 +113,8 @@ class adminUsecase {
     async terminatePost(postId:string,userId:string,message:string){
         try {
             let user = await this.userRepo.findUserById(userId)
-            console.log(user+"eda mwone")
             await this.sendMail.reportPostMail(user?.email as string,postId)
             let data = await this.postRepo.deletePost(postId,userId)
-            
             return data
         } catch (error) {
             console.log(error);

@@ -101,7 +101,6 @@ class communityRepository implements ICommunityInterface {
             if (data) {
                 const communityData = data.toObject();
                 const acceptedVolunteers = communityData.volunteers.filter((vol: any) => vol.is_accepted).map((vol: any) => vol.volunteerId);
-                console.log(acceptedVolunteers+"acc")
                 return acceptedVolunteers;
             }
             return null;

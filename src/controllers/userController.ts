@@ -68,16 +68,16 @@ class UserController {
                 res.cookie('userToken', token, {
                     expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: true,
+                    sameSite: 'none',
                     path: '/',
                 });
 
                 res.cookie('refreshToken', refreshToken, {
                     expires: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // 6 days
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: true,
+                    sameSite: 'none',
                     path: '/',
                 });
 
@@ -97,16 +97,16 @@ class UserController {
         try {
             res.clearCookie('userToken', {
                 httpOnly: true,
+                secure: true,
+                sameSite: 'none',
                 path: '/',
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
             });
     
             res.clearCookie('refreshToken', {
                 httpOnly: true,
+                secure: true,
+                sameSite: 'none',
                 path: '/',
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
             });
     
             res.status(200).json({ success: true });

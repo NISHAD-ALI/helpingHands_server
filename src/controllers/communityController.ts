@@ -10,7 +10,6 @@ class communityController {
     }
     async signup(req: Request, res: Response) {
         try {
-            console.log('hello');
 
             const { email, name, password, phone } = req.body
             const commData = { email, name, password, phone }
@@ -37,7 +36,10 @@ class communityController {
             if ((await saveCommDB).success) {
                 res.cookie('communityToken', (await saveCommDB).token, {
                     expires: new Date(Date.now() + 25892000000),
-                    httpOnly: true
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    path: '/',
                 })
                 res.status(200).json(saveCommDB)
             } else {
@@ -56,7 +58,10 @@ class communityController {
             if (checkUser.success) {
                 res.cookie('communityToken', checkUser.token, {
                     expires: new Date(Date.now() + 25892000000),
-                    httpOnly: true
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    path: '/',
                 })
                 res.status(200).json({ success: true, token: checkUser.token })
             } else {
@@ -92,10 +97,7 @@ class communityController {
     }
     async getProfile(req:Request,res:Response){
         try {
-            console.log('in get')
             let communityId = req.communityId
-            console.log(req.communityId);
-            
             if(communityId){
                 let data = await this.communityUseCase.getProfile(communityId)
                 res.status(200).json({ success: true,data })
@@ -108,16 +110,11 @@ class communityController {
     }
     async editProfile(req:Request,res:Response){
         try {
-            console.log("kk")
             const communityId = req.communityId
-            console.log("in edit"+communityId)
             const newData = req.body
-            console.log(newData)
             let profileImage = req.file
-            console.log(profileImage)
             newData.profileImage = profileImage 
             if (communityId) {
-                console.log("hi")
                 let updated = await this.communityUseCase.editProfile(communityId, newData);
                 if (updated) {
                     res.status(200).json({ success: true });
@@ -135,7 +132,6 @@ class communityController {
     async getCommunityById(req:Request,res:Response){
         try {
             const {id} = req.params
-            console.log(id+"222222222222222");
             
             if (id) {
                 let updated = await this.communityUseCase.getProfile(id);
@@ -155,11 +151,8 @@ class communityController {
     async updateStatus(req:Request,res:Response){
         try {
             const {id,is_accepted} = req.body
-            console.log(id,is_accepted)
             const cId:any = req.communityId
-            console.log(cId)
             if (id) {
-                console.log("hi")
                 let updated = await this.communityUseCase.updateStatus(id, is_accepted,cId);
                 if (updated) {
                     res.status(200).json({ success: true });

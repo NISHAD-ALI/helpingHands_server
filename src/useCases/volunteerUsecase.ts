@@ -119,29 +119,6 @@ class volunteerUseCases {
             throw error
         }
     }
-    // async googleSignup(name: string, email: string, password: string) {
-    //     try {
-    //         console.log('in g sign');
-
-    //         let exists = await this.volunteerRepo.findvolunteerByEmail(email)
-    //         if (exists) {
-    //             return { success: false, mesaage: 'Email already Exists' }
-    //         } else {
-    //             const hashedPassword = await this.hashPassword.hashPassword(password)
-    //             const savevolunteer = await this.volunteerRepo.savevolunteer({ name, email, password: hashedPassword } as volunteer)
-    //             if (savevolunteer) {
-    //                 const token = this.jwt.generateToken(savevolunteer._id, 'volunteer')
-    //                 return { success: true, token }
-    //             } else {
-    //                 return { success: false, message: 'Internal Server Error' }
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.error(error)
-    //         throw error
-    //     }
-
-    // }
     async forgetPassword(email: string) {
         try {
             let exists = await this.volunteerRepo.findvolunteerByEmail(email)

@@ -3,7 +3,6 @@ import eventUsecase from "../useCases/eventUsecase";
 import eventModel from "../frameworks/database/eventModel";
 import events from "../entities/events";
 import Jwt from "../frameworks/utils/jwtAuth";
-import jwt, { JwtPayload } from 'jsonwebtoken'
 
 class eventController {
     private eventUsecase: eventUsecase;
@@ -83,7 +82,6 @@ class eventController {
                 const payload = this.jwt.verifyToken(token);
                 if (payload) {
                     communityId = payload.id;
-                    console.log(communityId);
                 } else {
                     throw new Error('Invalid token or missing payload');
                 }
@@ -132,10 +130,8 @@ class eventController {
     }
     async editEvent(req: Request, res: Response) {
         try {
-            console.log("-------------------------------------")
             const { id, formData } = req.body;
             const { name, volunteerCount, details, shifts, category, is_online } = formData;
-            console.log(req.files)
             let parsedShifts;
             if (shifts) {
                 parsedShifts = JSON.parse(shifts);
@@ -189,7 +185,6 @@ class eventController {
     }
     async getEventsFilteredByDateRange(req: Request, res: Response) {
         const { startDate, endDate } = req.query;
-        console.log(startDate, endDate)
         try {
             const result = await this.eventUsecase.getEventsFilteredByDateRange(startDate as string, endDate as string);
             console.log(result)
@@ -205,7 +200,6 @@ class eventController {
     }
     async getEventsFilteredByCategory(req: Request, res: Response) {
         const { name } = req.query;
-        console.log(name)
         try {
             const result = await this.eventUsecase.getEventsFilteredByCategory(name as string);
             console.log(result)
@@ -222,11 +216,7 @@ class eventController {
     async getEventsFilteredByDay(req: Request, res: Response) {
         const { date } = req.query;
         try {
-            // const utcDate = new Date(date as string);
-
-            console.log(date)
             const result = await this.eventUsecase.getEventsFilteredByDay(date as any);
-            console.log(result);
             if (result) {
                 res.status(200).json({ success: true, result });
             } else {
@@ -241,7 +231,6 @@ class eventController {
         const { query } = req.query;
         try {
             const events = await this.eventUsecase.searchEvents(query as string);
-            console.log(events);
             if (events) {
                 res.status(200).json({ success: true, events });
             } else {

@@ -17,7 +17,7 @@ export const createServer = () => {
         app.use(cookieParser());
 
         app.use(cors({
-            origin: 'http://localhost:5173',
+            origin: 'https://helpinghandsindia.vercel.app',
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true
         }));
@@ -41,8 +41,8 @@ export const startServer = () => {
 
         const app = createServer();
 
-        app?.listen(3001, () => {
-            console.log("server is running @ 3001");
+        app?.listen(3000, () => {
+            console.log("server is running @ 3000");
         });
     } catch (error) {
         console.log(error);

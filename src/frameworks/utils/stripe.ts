@@ -20,8 +20,8 @@ class StripePayment {
                     },
                 ],
                 mode: 'payment',
-                success_url: 'http://localhost:5173/donate/success',
-                cancel_url: 'http://localhost:5173/donate/failure',
+                success_url: 'https://helpinghandsindia.vercel.app/donate/success',
+                cancel_url: 'https://helpinghandsindia.vercel.app/donate/failure',
             });
             return session.id;
         } catch (error) {

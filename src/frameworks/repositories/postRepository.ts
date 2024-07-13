@@ -3,10 +3,8 @@ import post from "../../entities/post";
 import userModel from "../database/userModel";
 import IPostInterface from "../../useCases/interfaces/IPostInterface";
 import mongoose from "mongoose";
-import comment from "../../entities/comment";
 import reportPostModel from "../database/reportPostModel";
 import savedPost from "../database/savedPost";
-import SavedPost from "../../entities/savedPosts";
 
 class postRepository implements IPostInterface {
 
@@ -50,9 +48,7 @@ class postRepository implements IPostInterface {
                     { _id: userId },
                     { $pull: { posts: id } }
                 );
-                console.log(user)
                 let reportDeletionResult = await reportPostModel.deleteMany({ postId: id });
-                console.log('Reports deleted:', reportDeletionResult);
             }
 
             return post.acknowledged;
@@ -181,7 +177,6 @@ class postRepository implements IPostInterface {
             };
             
             const alreadySaved = await savedPost.findOne({ userId:userId });
-           console.log("ALREADY SAVED--->",alreadySaved?.postId)
             if (alreadySaved?.postId?.includes(new mongoose.Schema.Types.ObjectId(newSave.postId as string) )) {
                 throw new Error('Post already saved');
             }
@@ -202,9 +197,6 @@ class postRepository implements IPostInterface {
 
     async getSavedPosts(id: string): Promise<any | null> {
         try {
- console.log('----------------------------')
-            console.log(id)
-            console.log('----------------------------')
             let data = await savedPost.findOne( {userId:id} ).populate('postId');
             return data;
         } catch (error: any) {

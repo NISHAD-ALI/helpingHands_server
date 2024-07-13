@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import postUsecase from "../useCases/postUsecase";
-import postModel from "../frameworks/database/postModel";
 import post from "../entities/post";
 import Jwt from "../frameworks/utils/jwtAuth";
-import jwt, { JwtPayload } from 'jsonwebtoken'
 
 class postController {
     private postUsecase: postUsecase;
