@@ -16,11 +16,18 @@ export const createServer = () => {
         app.use(express.urlencoded({ extended: true }));
         app.use(cookieParser());
 
+        // app.use(cors({
+        //     origin: 'https://helpinghandsindia.vercel.app',
+        //     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        //     credentials: true
+        // }));
+
         app.use(cors({
-            origin: 'https://helpinghandsindia.vercel.app',
+            origin: 'http://localhost:5173',
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true
         }));
+
         app.use('/', userRoute);
         app.use('/volunteer', VolunteerRoutes);
         app.use('/community', CommunityRoutes);

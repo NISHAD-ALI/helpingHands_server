@@ -1,6 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
 import user from "../../entities/user";
-
 const userSchema: Schema<user> = new Schema({
     name: {
         type: String,
@@ -21,7 +20,7 @@ const userSchema: Schema<user> = new Schema({
     },
     profileImage: {
         type: String,
-        default: './src/assets/profile.jpg'
+        default: 'https://res.cloudinary.com/dxriwp8sx/image/upload/v1723214021/profile_uk9sbs.png'
     },
     is_blocked: {
         type: Boolean,

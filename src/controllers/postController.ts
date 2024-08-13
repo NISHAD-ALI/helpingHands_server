@@ -218,8 +218,6 @@ class postController {
             let posts = await this.postUsecase.getSavedPosts(userId as string)
             if (posts) {
                 res.status(200).json({ success: true, posts })
-            } else {
-                res.status(500).json({ success: false, message: "Internal server error2" })
             }
         } catch (error) {
             console.error(error)

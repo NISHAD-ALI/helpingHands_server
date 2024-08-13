@@ -114,6 +114,7 @@ class userUseCases {
         try {
             let decoded = this.jwt.verifyToken(token) as JwtPayload;
             let newOtp = this.generateOtp.generateOTP()
+            await this.sendMailOtp.sendMail(decoded.userData.email, newOtp)
             console.log(newOtp);
             let userData = decoded.userData
             let newToken = jwt.sign({ userData, otp: newOtp }, process.env.JWT_SECRET_KEY as string, { expiresIn: '5m' })
